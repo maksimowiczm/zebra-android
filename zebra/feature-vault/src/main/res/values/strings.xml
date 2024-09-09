@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vaults">Vaults</string>
+    <string name="add_vault">Add vault</string>
+    <string name="open_vault">Open vault</string>
+    <string name="seems_like_you_don_t_have_any_vaults_yet">Seems like you don\'t have any vaults yet.</string>
+</resources>

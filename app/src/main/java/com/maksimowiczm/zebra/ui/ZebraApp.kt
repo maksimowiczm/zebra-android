@@ -3,10 +3,13 @@ package com.maksimowiczm.zebra.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import com.maksimowiczm.zebra.common_ui.theme.ZebraTheme
+import com.maksimowiczm.zebra.feature_vault.VAULT_ROUTE
+import com.maksimowiczm.zebra.feature_vault.vaultGraph
 
 @Composable
 fun ZebraApp() {
@@ -15,9 +18,14 @@ fun ZebraApp() {
             Column(
                 modifier = Modifier.padding(padding)
             ) {
-                Text(
-                    text = "Hello Zebra!"
-                )
+                val navController = rememberNavController()
+
+                NavHost(
+                    navController = navController,
+                    startDestination = VAULT_ROUTE,
+                ) {
+                    vaultGraph(navController)
+                }
             }
         }
     }
