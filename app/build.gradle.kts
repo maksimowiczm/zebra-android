@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -55,6 +57,10 @@ dependencies {
 
     implementation(project(":zebra:core:common-ui"))
     implementation(project(":zebra:feature:vault"))
+
+    // Hilt
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.hilt.android)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
