@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="vaults">Vaults</string>
-    <string name="add_vault">Add vault</string>
+    <string name="import_vault">Import new vault</string>
     <string name="open_vault">Open vault</string>
     <string name="seems_like_you_don_t_have_any_vaults_yet">Seems like you don\'t have any vaults yet.</string>
     <string name="seems_like_you_didn_t_pick_a_file">Seems like you haven\'t picked a file.</string>

@@ -1,12 +1,11 @@
 package com.maksimowiczm.zebra.feature.vault
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.maksimowiczm.zebra.core.common_ui.ComposableScreen
-import com.maksimowiczm.zebra.feature.vault.add_vault.AddVaultScreen
+import com.maksimowiczm.zebra.feature.vault.import_vault.ImportVaultScreen
 import com.maksimowiczm.zebra.feature.vault.home.HomeScreen
 import kotlinx.serialization.Serializable
 
@@ -15,7 +14,7 @@ internal sealed interface VaultScreen : ComposableScreen {
     data object VaultHomeScreen : VaultScreen
 
     @Serializable
-    data object AddVaultScreen : VaultScreen
+    data object ImportVaultScreen : VaultScreen
 }
 
 const val VAULT_ROUTE = "VAULT"
@@ -27,15 +26,13 @@ fun NavGraphBuilder.vaultGraph(navController: NavController) {
     ) {
         composable<VaultScreen.VaultHomeScreen> {
             HomeScreen(
-                viewModel = viewModel(),
-                onAdd = {
-                    navController.navigate(VaultScreen.AddVaultScreen)
+                onImport = {
+                    navController.navigate(VaultScreen.ImportVaultScreen)
                 }
             )
         }
-        composable<VaultScreen.AddVaultScreen> {
-            AddVaultScreen(
-                viewModel = viewModel(),
+        composable<VaultScreen.ImportVaultScreen> {
+            ImportVaultScreen(
                 onNavigateUp = {
                     navController.popBackStack(
                         route = VaultScreen.VaultHomeScreen.toDestination(),

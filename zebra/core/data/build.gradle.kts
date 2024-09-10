@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.dagger.hilt.android)
 }
 
 android {
@@ -33,6 +35,12 @@ android {
 }
 
 dependencies {
+
+    implementation(project(":zebra:core:database"))
+
+    // Hilt
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.hilt.android)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

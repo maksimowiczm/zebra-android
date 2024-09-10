@@ -1,7 +1,10 @@
-package com.maksimowiczm.zebra.feature.vault.add_vault
+package com.maksimowiczm.zebra.feature.vault.import_vault
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,19 +42,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
 import com.maksimowiczm.zebra.feature_vault.R
-import kotlinx.coroutines.delay
 
 @Composable
-internal fun AddVaultScreen(
-    viewModel: AddVaultViewModel,
+internal fun ImportVaultScreen(
+    viewModel: ImportVaultViewModel = hiltViewModel(),
     onNavigateUp: () -> Unit,
 ) {
-    var pickerLaunched by rememberSaveable { mutableStateOf(false) }
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    var pickerLaunched by rememberSaveable { mutableStateOf(false) }
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) {
@@ -65,42 +68,36 @@ internal fun AddVaultScreen(
         pickerLaunched = false
     }
 
-    var justLaunched by rememberSaveable { mutableStateOf(true) }
-    LaunchedEffect(justLaunched) {
-        viewModel.onStart()
-        justLaunched = false
-    }
-
     LaunchedEffect(state) {
-        if (state is AddVaultUiState.PickFile && !pickerLaunched) {
+        if (state is ImportVaultUiState.PickFile && !pickerLaunched) {
             filePickerLauncher.launch("*/*")
             pickerLaunched = true
         }
     }
 
     when (state) {
-        AddVaultUiState.Idle,
-        AddVaultUiState.Loading -> LoadingScreen(onNavigateUp = onNavigateUp)
+        ImportVaultUiState.PickFile,
+        ImportVaultUiState.Idle,
+        ImportVaultUiState.Loading -> LoadingScreen(onNavigateUp = onNavigateUp)
 
-        AddVaultUiState.PickFile -> {}
-
-        AddVaultUiState.PickFileCanceled -> CancelScreen(
+        ImportVaultUiState.PickFileCanceled -> CancelScreen(
             onRetry = {
                 viewModel.onRetry()
             },
             onNavigateUp = onNavigateUp
         )
 
-        is AddVaultUiState.FileReady -> FileReadyScreen(
-            name = (state as AddVaultUiState.FileReady).name,
+        is ImportVaultUiState.FileReady -> FileReadyScreen(
+            name = (state as ImportVaultUiState.FileReady).name,
             onNavigateUp = onNavigateUp,
             onNameChange = { viewModel.onNameChanged(it) },
             onAdd = {
-                viewModel.onAdd()
+                viewModel.onImport()
             }
         )
 
-        AddVaultUiState.Done -> DoneScreen(onNavigateUp = onNavigateUp)
+        ImportVaultUiState.Done -> DoneScreen(onNavigateUp = onNavigateUp)
+        ImportVaultUiState.FileError -> TODO()
     }
 }
 
@@ -112,7 +109,7 @@ private fun TopBar(
     TopAppBar(
         title = {
             Text(
-                text = stringResource(R.string.add_vault),
+                text = stringResource(R.string.import_vault),
                 style = MaterialTheme.typography.headlineLarge,
             )
         },
@@ -239,16 +236,16 @@ private fun FileReadyScreen(
 @Composable
 private fun DoneScreen(onNavigateUp: () -> Unit) {
     var progress by rememberSaveable { mutableFloatStateOf(0f) }
-
-    if (progress < 300f) {
-        LaunchedEffect(progress) {
-            delay(10)
-            progress += 1
-        }
-    } else {
-        onNavigateUp()
-    }
-
+    val progressAnimation by animateFloatAsState(
+        targetValue = progress,
+        animationSpec = tween(
+            durationMillis = 5_000,
+            easing = LinearEasing,
+        ),
+        label = "progress",
+        finishedListener = { onNavigateUp() }
+    )
+    LaunchedEffect(Unit) { progress = 1f }
 
     Column {
         TopBar(
@@ -256,7 +253,7 @@ private fun DoneScreen(onNavigateUp: () -> Unit) {
         )
         LinearProgressIndicator(
             modifier = Modifier.fillMaxWidth(),
-            progress = { progress / 300f },
+            progress = { progressAnimation },
             drawStopIndicator = {}
         )
         Column(
