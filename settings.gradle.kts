@@ -22,5 +22,5 @@ dependencyResolutionManagement {
 rootProject.name = "Zebra"
 include(":app")
 include(":zebra:core:common-ui")
-include(":zebra:core:data:api")
+include(":zebra:core:data")
 include(":zebra:feature:vault")

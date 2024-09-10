@@ -2,7 +2,7 @@ package com.maksimowiczm.zebra.feature.vault.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maksimowiczm.zebra.core.data.api.model.Vault
+import com.maksimowiczm.zebra.core.data.model.Vault
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

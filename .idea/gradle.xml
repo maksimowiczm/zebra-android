@@ -14,7 +14,6 @@
             <option value="$PROJECT_DIR$/zebra/core" />
             <option value="$PROJECT_DIR$/zebra/core/common-ui" />
             <option value="$PROJECT_DIR$/zebra/core/data" />
-            <option value="$PROJECT_DIR$/zebra/core/data/api" />
             <option value="$PROJECT_DIR$/zebra/feature" />
             <option value="$PROJECT_DIR$/zebra/feature/vault" />
           </set>
