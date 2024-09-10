@@ -11,10 +11,12 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/zebra" />
-            <option value="$PROJECT_DIR$/zebra/common-ui" />
-            <option value="$PROJECT_DIR$/zebra/domain" />
-            <option value="$PROJECT_DIR$/zebra/domain/api" />
-            <option value="$PROJECT_DIR$/zebra/feature-vault" />
+            <option value="$PROJECT_DIR$/zebra/core" />
+            <option value="$PROJECT_DIR$/zebra/core/common-ui" />
+            <option value="$PROJECT_DIR$/zebra/core/data" />
+            <option value="$PROJECT_DIR$/zebra/core/data/api" />
+            <option value="$PROJECT_DIR$/zebra/feature" />
+            <option value="$PROJECT_DIR$/zebra/feature/vault" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

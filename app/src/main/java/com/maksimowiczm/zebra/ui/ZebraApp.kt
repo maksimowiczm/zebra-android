@@ -7,9 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.maksimowiczm.zebra.common_ui.theme.ZebraTheme
-import com.maksimowiczm.zebra.feature_vault.VAULT_ROUTE
-import com.maksimowiczm.zebra.feature_vault.vaultGraph
+import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
+import com.maksimowiczm.zebra.feature.vault.VAULT_ROUTE
+import com.maksimowiczm.zebra.feature.vault.vaultGraph
 
 @Composable
 fun ZebraApp() {
