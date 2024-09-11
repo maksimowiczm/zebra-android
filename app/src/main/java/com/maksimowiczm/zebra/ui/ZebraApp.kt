@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
-import com.maksimowiczm.zebra.feature.vault.VAULT_ROUTE
+import com.maksimowiczm.zebra.feature.vault.VaultRoute
 import com.maksimowiczm.zebra.feature.vault.vaultGraph
 
 @Composable
@@ -22,7 +22,7 @@ fun ZebraApp() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = VAULT_ROUTE,
+                    startDestination = VaultRoute,
                 ) {
                     vaultGraph(navController)
                 }
