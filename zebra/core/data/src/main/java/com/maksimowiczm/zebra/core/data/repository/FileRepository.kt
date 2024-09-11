@@ -37,4 +37,14 @@ class FileRepository @Inject constructor(
             return Err(Unit)
         }
     }
+
+    fun isReadable(uri: Uri): Boolean {
+        // todo this might be really bad idea to do
+        try {
+            context.contentResolver.openFileDescriptor(uri, "r")?.use { }
+            return true
+        } catch (_: Exception) {
+            return false
+        }
+    }
 }

@@ -21,6 +21,10 @@ class VaultRepository @Inject constructor(
     suspend fun upsertVault(vault: Vault) {
         vaultDao.upsertVault(vault.asEntity())
     }
+
+    suspend fun deleteVault(vault: Vault) {
+        vaultDao.deleteVault(vault.asEntity())
+    }
 }
 
 private fun Vault.asEntity() = VaultEntity(

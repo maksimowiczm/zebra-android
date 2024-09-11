@@ -10,13 +10,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,8 +29,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -51,6 +58,7 @@ internal fun HomeScreen(
         HomeScreen(
             vaults = state.vaults,
             onImport = onImport,
+            onDelete = { viewModel.onDelete(it) }
         )
     }
 }
@@ -81,6 +89,7 @@ private fun Loading() {
 private fun HomeScreen(
     vaults: List<Vault>,
     onImport: () -> Unit,
+    onDelete: (Vault) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -91,6 +100,7 @@ private fun HomeScreen(
         Content(
             vaults = vaults,
             onImport = onImport,
+            onDelete = onDelete,
             onClick = {}
         )
     }
@@ -138,6 +148,7 @@ private fun Content(
     vaults: List<Vault>,
     onClick: (Vault) -> Unit,
     onImport: () -> Unit,
+    onDelete: (Vault) -> Unit,
 ) {
     if (vaults.isEmpty()) {
         Empty(
@@ -146,7 +157,8 @@ private fun Content(
     } else {
         VaultList(
             vaults = vaults,
-            onClick = onClick
+            onClick = onClick,
+            onDelete = onDelete,
         )
     }
 }
@@ -180,26 +192,106 @@ fun Empty(
 private fun VaultList(
     vaults: List<Vault>,
     onClick: (Vault) -> Unit,
+    onDelete: (Vault) -> Unit,
 ) {
     LazyColumn {
-        items(vaults) { vault ->
-            ListItem(
-                modifier = Modifier.clickable { onClick(vault) },
-                headlineContent = {
-                    Text(
-                        text = vault.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                },
-                trailingContent = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = stringResource(R.string.open_vault),
-                    )
-                },
-            )
+        items(
+            items = vaults,
+            key = { it.name }
+        ) { vault ->
+            if (vault.pathBroken) {
+                BrokenVaultListItem(
+                    name = vault.name,
+                    onDelete = { onDelete(vault) },
+                )
+            } else {
+                VaultListItem(
+                    name = vault.name,
+                    onClick = { onClick(vault) }
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun VaultListItem(
+    name: String,
+    onClick: () -> Unit,
+) {
+    ListItem(
+        modifier = Modifier.clickable { onClick() },
+        headlineContent = {
+            Text(
+                text = name,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        },
+        trailingContent = {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = stringResource(R.string.open_vault),
+            )
+        },
+    )
+}
+
+@Composable
+private fun BrokenVaultListItem(
+    name: String,
+    onDelete: () -> Unit,
+) {
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+
+    if (showDialog) {
+        BrokenVaultDialog(
+            onDismiss = { showDialog = false },
+            onDelete = onDelete,
+        )
+    }
+
+    ListItem(
+        modifier = Modifier.clickable { showDialog = true },
+        headlineContent = {
+            Text(
+                text = name,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        },
+        trailingContent = {
+            Icon(
+                painter = painterResource(R.drawable.ic_forgor),
+                contentDescription = "Vault broken.",
+            )
+        },
+    )
+}
+
+@Composable
+private fun BrokenVaultDialog(
+    onDismiss: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            OutlinedButton(
+                onClick = onDelete
+            ) {
+                Text(text = stringResource(R.string.cancel))
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onDelete,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text(stringResource(R.string.delete))
+            }
+        },
+        title = { Text(stringResource(R.string.vault_broken)) },
+        text = { Text(stringResource(R.string.vault_is_broken_do_you_want_to_delete_it)) }
+    )
 }
 
 
@@ -222,8 +314,20 @@ private fun HomeScreenPreview(
         Surface {
             HomeScreen(
                 vaults = vaults,
-                onImport = {}
+                onImport = {},
+                onDelete = {},
             )
         }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun BrokenVaultDialogPreview() {
+    ZebraTheme {
+        BrokenVaultDialog(
+            onDismiss = {},
+            onDelete = {},
+        )
     }
 }

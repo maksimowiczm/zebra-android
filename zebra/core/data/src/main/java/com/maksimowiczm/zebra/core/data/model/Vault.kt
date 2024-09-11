@@ -7,16 +7,19 @@ import com.maksimowiczm.zebra.core.database.model.VaultEntity
 data class Vault(
     val name: String,
     val path: Uri,
+    val pathBroken: Boolean = true,
 )
 
-internal fun Vault.asVaultEntity(): VaultEntity = VaultEntity(
-    name = name,
-    path = path.toString(),
-)
-
-internal fun VaultEntity.asVault(): Vault = Vault(
+internal fun VaultEntity.asVault(
+    fileRepository: FileRepository
+): Vault = Vault(
     name = name,
     path = Uri.parse(path),
+    pathBroken = !fileRepository.isReadable(Uri.parse(path)),
 )
 
-internal fun List<VaultEntity>.asVaults(): List<Vault> = map(VaultEntity::asVault)
+internal fun List<VaultEntity>.asVaults(
+    fileRepository: FileRepository
+): List<Vault> = map {
+    it.asVault(fileRepository)
+}
