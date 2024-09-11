@@ -1,6 +1,7 @@
 package com.maksimowiczm.zebra.core.data.repository
 
 import com.maksimowiczm.zebra.core.data.model.Vault
+import com.maksimowiczm.zebra.core.data.model.asVault
 import com.maksimowiczm.zebra.core.data.model.asVaults
 import com.maksimowiczm.zebra.core.database.dao.VaultDao
 import com.maksimowiczm.zebra.core.database.model.VaultEntity
@@ -16,7 +17,11 @@ class VaultRepository @Inject constructor(
         return vaultDao.observeVaults().map { it.asVaults(fileRepository) }
     }
 
-    suspend fun vaultExist(name: String) = vaultDao.vaultExist(name)
+    suspend fun vaultExistByName(name: String): Boolean = vaultDao.vaultExistByName(name)
+
+    suspend fun getVaultByPath(path: String): Vault? {
+        return vaultDao.getVaultByPath(path)?.asVault(fileRepository)
+    }
 
     suspend fun upsertVault(vault: Vault) {
         vaultDao.upsertVault(vault.asEntity())

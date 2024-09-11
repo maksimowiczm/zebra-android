@@ -14,4 +14,5 @@
     <string name="vault_is_broken_do_you_want_to_delete_it">Vault seems to be corrupted. File might be deleted or moved. Do you want to delete it?</string>
     <string name="vault_broken">Vault broken</string>
     <string name="delete">Delete</string>
+    <string name="vault_already_exists_with_the_name">Vault already exists with the name</string>
 </resources>

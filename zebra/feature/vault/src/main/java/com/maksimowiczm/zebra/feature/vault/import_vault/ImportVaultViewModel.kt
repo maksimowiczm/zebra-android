@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.getOrElse
 import com.maksimowiczm.zebra.core.domain.ImportUniqueVaultUseCase
+import com.maksimowiczm.zebra.core.domain.ImportVaultResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -66,8 +67,14 @@ internal class ImportVaultViewModel @Inject constructor(
             importUniqueVaultUseCase.invoke(
                 name = state.name,
                 path = state.path
-            ).getOrElse {
-                _state.update { ImportVaultUiState.FileImportError }
+            ).getOrElse { err ->
+                val newState = when (err) {
+                    ImportVaultResult.FileError -> ImportVaultUiState.FileImportError
+                    is ImportVaultResult.VaultExists -> ImportVaultUiState.VaultExists(err.vault)
+                }
+
+                _state.update { newState }
+
                 return@launch
             }
 

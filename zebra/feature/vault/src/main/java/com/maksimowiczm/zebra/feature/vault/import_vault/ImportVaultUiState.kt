@@ -1,6 +1,7 @@
 package com.maksimowiczm.zebra.feature.vault.import_vault
 
 import android.net.Uri
+import com.maksimowiczm.zebra.core.data.model.Vault
 
 
 internal sealed interface ImportVaultUiState {
@@ -40,4 +41,6 @@ internal sealed interface ImportVaultUiState {
     data object IllegalFileName : ImportVaultUiState
 
     data object FileImportError : ImportVaultUiState
+
+    data class VaultExists(val vault: Vault) : ImportVaultUiState
 }

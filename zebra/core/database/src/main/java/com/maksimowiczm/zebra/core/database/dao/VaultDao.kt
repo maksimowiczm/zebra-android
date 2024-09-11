@@ -15,7 +15,10 @@ interface VaultDao {
     fun observeVaults(): Flow<List<VaultEntity>>
 
     @Query("SELECT EXISTS(SELECT * FROM VaultEntity WHERE name = :name)")
-    suspend fun vaultExist(name: String): Boolean
+    suspend fun vaultExistByName(name: String): Boolean
+
+    @Query("SELECT * FROM VaultEntity WHERE path = :path")
+    suspend fun getVaultByPath(path: String): VaultEntity?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertVault(vault: VaultEntity)

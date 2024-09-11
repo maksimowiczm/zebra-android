@@ -99,6 +99,10 @@ internal fun ImportVaultScreen(
         ImportVaultUiState.Done -> DoneScreen(onNavigateUp = onNavigateUp)
         ImportVaultUiState.FileImportError -> TODO()
         ImportVaultUiState.IllegalFileName -> TODO()
+        is ImportVaultUiState.VaultExists -> VaultExistsScreen(
+            name = (state as ImportVaultUiState.VaultExists).vault.name,
+            onNavigateUp = onNavigateUp,
+        )
     }
 }
 
@@ -302,6 +306,30 @@ private fun FileReadyContent(
     }
 }
 
+@Composable
+private fun VaultExistsScreen(
+    name: String,
+    onNavigateUp: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopBar(onNavigateUp = onNavigateUp)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = stringResource(R.string.vault_already_exists_with_the_name),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = "\"$name\"",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    }
+}
+
 
 @PreviewLightDark
 @Composable
@@ -349,6 +377,19 @@ private fun DoneScreenPreview() {
     ZebraTheme {
         Surface {
             DoneScreen(
+                onNavigateUp = {}
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun VaultExistsScreenPreview() {
+    ZebraTheme {
+        Surface {
+            VaultExistsScreen(
+                name = "Vault name",
                 onNavigateUp = {}
             )
         }
