@@ -9,21 +9,24 @@ internal class VaultListProvider : PreviewParameterProvider<List<Vault>> {
         emptyList(),
         listOf(
             Vault(
+                identifier = 0,
                 name = "My vault",
                 path = "/path/to/my/vault".toUri(),
                 pathBroken = false,
             ),
             Vault(
+                identifier = 1,
                 name = "Work vault",
                 path = "/path/to/work/vault".toUri(),
                 pathBroken = true,
             )
         ),
-        (1..100).map {
+        (1..100L).map {
             Vault(
+                identifier = it,
                 name = "Vault $it",
                 path = "/path/to/vault/$it".toUri(),
-                pathBroken = it % 4 == 3,
+                pathBroken = it % 4L == 3L,
             )
         }
     )

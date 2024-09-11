@@ -37,12 +37,10 @@ class ImportUniqueVaultUseCase @Inject constructor(
                 vaultName = "$vaultName-"
             }
 
-            val newVault = Vault(
+            vaultRepository.upsertVault(
                 name = vaultName,
-                path = path,
+                path = path.toString()
             )
-
-            vaultRepository.upsertVault(newVault)
 
             return Ok(Unit)
         } catch (e: CancellationException) {

@@ -5,7 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class VaultEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    val identifier: Long = 0,
     val name: String,
     val path: String,
 )

@@ -4,7 +4,10 @@ import android.net.Uri
 import com.maksimowiczm.zebra.core.data.repository.FileRepository
 import com.maksimowiczm.zebra.core.database.model.VaultEntity
 
+typealias VaultIdentifier = Long
+
 data class Vault(
+    val identifier: Long,
     val name: String,
     val path: Uri,
     val pathBroken: Boolean = true,
@@ -13,6 +16,7 @@ data class Vault(
 internal fun VaultEntity.asVault(
     fileRepository: FileRepository
 ): Vault = Vault(
+    identifier = identifier,
     name = name,
     path = Uri.parse(path),
     pathBroken = !fileRepository.isReadable(Uri.parse(path)),

@@ -23,8 +23,16 @@ class VaultRepository @Inject constructor(
         return vaultDao.getVaultByPath(path)?.asVault(fileRepository)
     }
 
-    suspend fun upsertVault(vault: Vault) {
-        vaultDao.upsertVault(vault.asEntity())
+    suspend fun upsertVault(
+        name: String,
+        path: String
+    ) {
+        val entity = VaultEntity(
+            name = name,
+            path = path
+        )
+
+        vaultDao.upsertVault(entity)
     }
 
     suspend fun deleteVault(vault: Vault) {
