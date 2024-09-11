@@ -42,6 +42,9 @@ dependencies {
     implementation(project(":zebra:core:data"))
     implementation(project(":zebra:core:domain"))
 
+    // Result monad
+    implementation(libs.kotlin.result)
+
     // Hilt
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)

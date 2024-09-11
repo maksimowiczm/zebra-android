@@ -2,7 +2,9 @@ package com.maksimowiczm.zebra.core.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import com.maksimowiczm.zebra.core.database.model.VaultEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -14,6 +16,9 @@ interface VaultDao {
     @Query("SELECT EXISTS(SELECT * FROM VaultEntity WHERE name = :name)")
     suspend fun vaultExist(name: String): Boolean
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertVault(vault: VaultEntity)
+
+    @Upsert
+    suspend fun upsertVault(vault: VaultEntity)
 }

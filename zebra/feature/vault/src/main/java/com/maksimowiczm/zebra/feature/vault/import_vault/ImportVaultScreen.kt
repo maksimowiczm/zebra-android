@@ -56,7 +56,7 @@ internal fun ImportVaultScreen(
 
     var pickerLaunched by rememberSaveable { mutableStateOf(false) }
     val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) {
         if (it == null) {
             viewModel.onCanceled()
@@ -70,7 +70,7 @@ internal fun ImportVaultScreen(
 
     LaunchedEffect(state) {
         if (state is ImportVaultUiState.PickFile && !pickerLaunched) {
-            filePickerLauncher.launch("*/*")
+            filePickerLauncher.launch(arrayOf("*/*"))
             pickerLaunched = true
         }
     }
@@ -97,7 +97,8 @@ internal fun ImportVaultScreen(
         )
 
         ImportVaultUiState.Done -> DoneScreen(onNavigateUp = onNavigateUp)
-        ImportVaultUiState.FileError -> TODO()
+        ImportVaultUiState.FileImportError -> TODO()
+        ImportVaultUiState.IllegalFileName -> TODO()
     }
 }
 

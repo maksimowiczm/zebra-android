@@ -7,4 +7,5 @@ import androidx.room.PrimaryKey
 data class VaultEntity(
     @PrimaryKey
     val name: String,
+    val path: String,
 )

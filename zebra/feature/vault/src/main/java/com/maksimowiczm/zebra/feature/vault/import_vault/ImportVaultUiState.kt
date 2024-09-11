@@ -1,7 +1,9 @@
 package com.maksimowiczm.zebra.feature.vault.import_vault
 
+import android.net.Uri
 
-sealed interface ImportVaultUiState {
+
+internal sealed interface ImportVaultUiState {
     /**
      * Literally nothing is happening.
      */
@@ -27,6 +29,7 @@ sealed interface ImportVaultUiState {
      */
     data class FileReady(
         val name: String,
+        val path: Uri,
     ) : ImportVaultUiState
 
     /**
@@ -34,5 +37,7 @@ sealed interface ImportVaultUiState {
      */
     data object Done : ImportVaultUiState
 
-    data object FileError : ImportVaultUiState
+    data object IllegalFileName : ImportVaultUiState
+
+    data object FileImportError : ImportVaultUiState
 }

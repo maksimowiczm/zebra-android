@@ -3,7 +3,8 @@ package com.maksimowiczm.zebra.feature.vault.import_vault
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maksimowiczm.zebra.core.domain.InsertUniqueVaultUseCase
+import com.github.michaelbull.result.getOrElse
+import com.maksimowiczm.zebra.core.domain.ImportUniqueVaultUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,8 +13,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ImportVaultViewModel @Inject constructor(
-    private val insertUniqueVaultUseCase: InsertUniqueVaultUseCase
+internal class ImportVaultViewModel @Inject constructor(
+    private val importUniqueVaultUseCase: ImportUniqueVaultUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow<ImportVaultUiState>(ImportVaultUiState.PickFile)
     val state = _state.asStateFlow()
@@ -32,13 +33,14 @@ class ImportVaultViewModel @Inject constructor(
 
             val name = uri.getFileName()
             if (name == null) {
-                _state.update { ImportVaultUiState.FileError }
+                _state.update { ImportVaultUiState.IllegalFileName }
                 return@launch
             }
 
             _state.update {
                 ImportVaultUiState.FileReady(
                     name = name,
+                    path = uri,
                 )
             }
         }
@@ -57,12 +59,17 @@ class ImportVaultViewModel @Inject constructor(
         }
 
         val state = (state.value as ImportVaultUiState.FileReady)
-        val name = state.name
 
         viewModelScope.launch {
             _state.update { ImportVaultUiState.Loading }
 
-            insertUniqueVaultUseCase.invoke(name)
+            importUniqueVaultUseCase.invoke(
+                name = state.name,
+                path = state.path
+            ).getOrElse {
+                _state.update { ImportVaultUiState.FileImportError }
+                return@launch
+            }
 
             _state.update { ImportVaultUiState.Done }
         }
