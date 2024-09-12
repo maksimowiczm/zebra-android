@@ -21,4 +21,8 @@
     <string name="invalid_credentials">Invalid credentials</string>
     <string name="unlocking">Unlocking</string>
     <string name="password">Password</string>
+    <string name="lock">Lock</string>
+    <string name="open">Open</string>
+    <string name="url">Url</string>
+    <string name="username">Username</string>
 </resources>

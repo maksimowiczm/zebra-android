@@ -60,4 +60,8 @@ class UnlockRepository @Inject constructor(
 
         return Ok(Unit)
     }
+
+    fun lock(identifier: VaultIdentifier) {
+        keepassDataSource.lock(identifier)
+    }
 }

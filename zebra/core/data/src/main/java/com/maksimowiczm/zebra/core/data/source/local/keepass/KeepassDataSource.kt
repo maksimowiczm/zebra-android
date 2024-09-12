@@ -123,7 +123,26 @@ private fun KeePassDatabase.asUnlocked(): VaultStatus.Unlocked {
 }
 
 private fun Entry.toVaultEntry(): VaultEntry {
-    val entry = VaultEntry
+    val username = if (fields.userName?.content.isNullOrEmpty()) {
+        null
+    } else {
+        fields.userName?.content
+    }
 
-    return entry
+    val url = if (fields.url?.content.isNullOrEmpty()) {
+        null
+    } else {
+        fields.url?.content
+    }
+
+    return VaultEntry(
+        title = fields.title?.content ?: url ?: username ?: "<untitled>",
+        username = username,
+        password = if (fields.password == null) {
+            null
+        } else {
+            { fields.password!!.content }
+        },
+        url = url,
+    )
 }
