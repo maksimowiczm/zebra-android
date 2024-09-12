@@ -48,6 +48,7 @@ import com.maksimowiczm.zebra.feature_vault.R
 @Composable
 internal fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
+    onVaultClick: (Vault) -> Unit,
     onImport: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -58,7 +59,8 @@ internal fun HomeScreen(
         HomeScreen(
             vaults = state.vaults,
             onImport = onImport,
-            onDelete = { viewModel.onDelete(it) }
+            onDelete = { viewModel.onDelete(it) },
+            onVaultClick = onVaultClick,
         )
     }
 }
@@ -90,6 +92,7 @@ private fun HomeScreen(
     vaults: List<Vault>,
     onImport: () -> Unit,
     onDelete: (Vault) -> Unit,
+    onVaultClick: (Vault) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -101,7 +104,7 @@ private fun HomeScreen(
             vaults = vaults,
             onImport = onImport,
             onDelete = onDelete,
-            onClick = {}
+            onClick = onVaultClick,
         )
     }
 }
@@ -316,6 +319,7 @@ private fun HomeScreenPreview(
                 vaults = vaults,
                 onImport = {},
                 onDelete = {},
+                onVaultClick = {},
             )
         }
     }

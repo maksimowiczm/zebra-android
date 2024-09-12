@@ -7,7 +7,14 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.io.FileNotFoundException
+import java.io.InputStream
 import javax.inject.Inject
+
+sealed interface OpenFileError {
+    data object FileNotFound : OpenFileError
+    data object Unknown : OpenFileError
+}
 
 class FileRepository @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -46,5 +53,23 @@ class FileRepository @Inject constructor(
         } catch (_: Exception) {
             return false
         }
+    }
+
+    fun openInputStream(uri: Uri): Result<InputStream, OpenFileError> {
+        val stream = runCatching {
+            context.contentResolver.openInputStream(uri)
+        }.getOrElse {
+            if (it is FileNotFoundException) {
+                return Err(OpenFileError.FileNotFound)
+            }
+
+            return Err(OpenFileError.Unknown)
+        }
+
+        if (stream == null) {
+            return Err(OpenFileError.Unknown)
+        }
+
+        return Ok(stream)
     }
 }

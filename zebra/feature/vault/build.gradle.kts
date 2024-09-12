@@ -38,6 +38,7 @@ android {
 
 dependencies {
 
+    implementation(project(":zebra:core:common"))
     implementation(project(":zebra:core:common-ui"))
     implementation(project(":zebra:core:data"))
     implementation(project(":zebra:core:domain"))

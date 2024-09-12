@@ -38,8 +38,12 @@ dependencies {
 
     implementation(project(":zebra:core:database"))
 
+    // Kotpass
+    implementation(libs.kotpass)
+
     // Result monad
     implementation(libs.kotlin.result)
+    implementation(project(":zebra:core:common"))
 
     // Hilt
     ksp(libs.hilt.android.compiler)

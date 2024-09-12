@@ -1,6 +1,7 @@
 package com.maksimowiczm.zebra.core.data.repository
 
 import com.maksimowiczm.zebra.core.data.model.Vault
+import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
 import com.maksimowiczm.zebra.core.data.model.asVault
 import com.maksimowiczm.zebra.core.data.model.asVaults
 import com.maksimowiczm.zebra.core.database.dao.VaultDao
@@ -15,6 +16,14 @@ class VaultRepository @Inject constructor(
 ) {
     fun observeVaults(): Flow<List<Vault>> {
         return vaultDao.observeVaults().map { it.asVaults(fileRepository) }
+    }
+
+    fun observeVaultByIdentifier(identifier: VaultIdentifier): Flow<Vault?> {
+        return vaultDao.observeVaultByIdentifier(identifier).map { it?.asVault(fileRepository) }
+    }
+
+    suspend fun getVaultByIdentifier(identifier: VaultIdentifier): Vault? {
+        return vaultDao.getVaultByIdentifier(identifier)?.asVault(fileRepository)
     }
 
     suspend fun vaultExistByName(name: String): Boolean = vaultDao.vaultExistByName(name)

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="close">Close</string>
+    <string name="whoops">Whoops!</string>
+    <string name="something_went_wrong">Something went wrong</string>
+</resources>

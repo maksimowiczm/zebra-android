@@ -15,4 +15,10 @@
     <string name="vault_broken">Vault broken</string>
     <string name="delete">Delete</string>
     <string name="vault_already_exists_with_the_name">Vault already exists with the name</string>
+    <string name="hide">Hide</string>
+    <string name="show">Show</string>
+    <string name="unlock">Unlock</string>
+    <string name="invalid_credentials">Invalid credentials</string>
+    <string name="unlocking">Unlocking</string>
+    <string name="password">Password</string>
 </resources>

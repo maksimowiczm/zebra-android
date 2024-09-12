@@ -22,6 +22,8 @@ hiltNavigationCompose = "1.2.0"
 ksp = "2.0.20-1.0.24"
 roomRuntime = "2.6.1"
 kotlinResult = "2.0.0"
+kotlinxCoroutinesCore = "1.9.0-RC.2"
+kotpass = "0.10.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,6 +43,8 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 kotlin-result = { module = "com.michael-bull.kotlin-result:kotlin-result", version.ref = "kotlinResult" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+kotpass = { module = "app.keemobile:kotpass", version.ref = "kotpass" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }

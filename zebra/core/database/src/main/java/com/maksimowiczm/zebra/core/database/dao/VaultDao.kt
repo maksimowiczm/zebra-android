@@ -14,6 +14,12 @@ interface VaultDao {
     @Query("SELECT * FROM VaultEntity")
     fun observeVaults(): Flow<List<VaultEntity>>
 
+    @Query("SELECT * FROM VaultEntity WHERE identifier = :identifier")
+    fun observeVaultByIdentifier(identifier: Long): Flow<VaultEntity?>
+
+    @Query("SELECT * FROM VaultEntity WHERE identifier = :identifier")
+    suspend fun getVaultByIdentifier(identifier: Long): VaultEntity?
+
     @Query("SELECT EXISTS(SELECT * FROM VaultEntity WHERE name = :name)")
     suspend fun vaultExistByName(name: String): Boolean
 
