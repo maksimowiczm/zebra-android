@@ -1,14 +1,12 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.serialization)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
-    namespace = "com.maksimowiczm.zebra.feature_vault"
+    namespace = "com.maksimowiczm.zebra.core.clipboard"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -38,27 +36,10 @@ android {
 
 dependencies {
 
-    implementation(project(":zebra:core:common"))
-    implementation(project(":zebra:core:common-ui"))
-    implementation(project(":zebra:core:data"))
-    implementation(project(":zebra:core:domain"))
-    implementation(project(":zebra:core:clipboard"))
-
-    // Result monad
-    implementation(libs.kotlin.result)
-
     // Hilt
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
-    implementation(libs.androidx.hilt.navigation.compose)
 
-    implementation(libs.kotlinx.serialization.json)
-    debugImplementation(libs.androidx.ui.tooling)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.material3)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

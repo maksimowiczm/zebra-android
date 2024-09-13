@@ -25,4 +25,7 @@
     <string name="open">Open</string>
     <string name="url">Url</string>
     <string name="username">Username</string>
+    <string name="copy_username">Copy username</string>
+    <string name="copy_password">Copy password</string>
+    <string name="copy_url">Copy Url</string>
 </resources>

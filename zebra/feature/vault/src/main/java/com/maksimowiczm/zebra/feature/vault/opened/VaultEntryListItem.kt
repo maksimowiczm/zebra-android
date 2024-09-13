@@ -37,6 +37,7 @@ import com.maksimowiczm.zebra.feature_vault.R
 @Composable
 internal fun VaultEntryListItem(
     entry: VaultEntry,
+    onCopy: (String, Boolean) -> Unit,
     initialOpened: Boolean = false,
 ) {
     var opened by rememberSaveable { mutableStateOf(initialOpened) }
@@ -62,7 +63,7 @@ internal fun VaultEntryListItem(
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.onSurface)
             )
-            EntryContent(entry = entry)
+            EntryContent(entry = entry, onCopy = onCopy)
         }
     }
 }
@@ -101,7 +102,10 @@ private fun EntryHeader(
 }
 
 @Composable
-private fun EntryContent(entry: VaultEntry) {
+private fun EntryContent(
+    entry: VaultEntry,
+    onCopy: (String, Boolean) -> Unit,
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         if (entry.username != null) {
             Row(
@@ -121,6 +125,13 @@ private fun EntryContent(entry: VaultEntry) {
                         Text(
                             text = entry.username!!,
                         )
+                        Spacer(modifier = Modifier.weight(1f))
+                        IconButton(onClick = { onCopy(entry.username!!, false) }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_content_copy),
+                                contentDescription = stringResource(R.string.copy_username)
+                            )
+                        }
                     }
                 }
             }
@@ -168,6 +179,12 @@ private fun EntryContent(entry: VaultEntry) {
                                 )
                             }
                         }
+                        IconButton(onClick = { onCopy(entry.password!!(), true) }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_content_copy),
+                                contentDescription = stringResource(R.string.copy_password)
+                            )
+                        }
                     }
                 }
             }
@@ -191,6 +208,13 @@ private fun EntryContent(entry: VaultEntry) {
                         Text(
                             text = entry.url!!,
                         )
+                        Spacer(modifier = Modifier.weight(1f))
+                        IconButton(onClick = { onCopy(entry.url!!, false) }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_content_copy),
+                                contentDescription = stringResource(R.string.copy_url),
+                            )
+                        }
                     }
                 }
             }
@@ -209,6 +233,7 @@ private fun ExpandedVaultEntryListItemPreview(
             VaultEntryListItem(
                 entry = entry,
                 initialOpened = true,
+                onCopy = { _, _ -> }
             )
         }
     }
@@ -222,6 +247,7 @@ private fun VaultEntryListItemPreview() {
             VaultEntryListItem(
                 entry = VaultEntryProvider().values.first(),
                 initialOpened = false,
+                onCopy = { _, _ -> }
             )
         }
     }

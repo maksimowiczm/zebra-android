@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.maksimowiczm.zebra.core.clipboard.ClipboardManager
 import com.maksimowiczm.zebra.core.data.model.Vault
 import com.maksimowiczm.zebra.core.data.model.VaultEntry
 import com.maksimowiczm.zebra.core.data.model.VaultStatus
@@ -22,6 +23,7 @@ internal class OpenedVaultViewModel @Inject constructor(
     vaultRepository: VaultRepository,
     private val unlockRepository: UnlockRepository,
     savedStateHandle: SavedStateHandle,
+    private val clipboardManager: ClipboardManager,
 ) : ViewModel() {
     private val identifier = savedStateHandle.toRoute<VaultScreen.OpenedVaultScreen>().identifier
 
@@ -51,8 +53,12 @@ internal class OpenedVaultViewModel @Inject constructor(
             initialValue = OpenVaultUiState.Loading
         )
 
-    fun onLock(){
+    fun onLock() {
         unlockRepository.lock(identifier)
+    }
+
+    fun onCopy(content: String, confidential: Boolean) {
+        clipboardManager.copy(content, confidential)
     }
 }
 

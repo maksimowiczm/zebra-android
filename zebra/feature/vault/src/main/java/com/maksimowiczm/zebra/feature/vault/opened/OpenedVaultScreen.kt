@@ -68,7 +68,8 @@ internal fun OpenedVaultScreen(
                 vault = state.vault,
                 onNavigateUp = onNavigateUp,
                 entries = state.entries,
-                onLock = { viewModel.onLock() }
+                onLock = { viewModel.onLock() },
+                onCopy = { text, hide -> viewModel.onCopy(text, hide) }
             )
         }
     }
@@ -79,6 +80,7 @@ internal fun OpenedVaultScreen(
 private fun OpenedVaultScreen(
     onNavigateUp: () -> Unit,
     onLock: () -> Unit,
+    onCopy: (String, Boolean) -> Unit,
     vault: Vault,
     entries: List<VaultEntry>,
 ) {
@@ -125,7 +127,7 @@ private fun OpenedVaultScreen(
         ) {
             LazyColumn {
                 items(entries) {
-                    VaultEntryListItem(it)
+                    VaultEntryListItem(it, onCopy = onCopy)
                     HorizontalDivider()
                 }
             }
@@ -155,6 +157,7 @@ private fun OpenedVaultScreenPreview(
             OpenedVaultScreen(
                 onNavigateUp = {},
                 onLock = {},
+                onCopy = { _, _ -> },
                 vault = Vault(
                     identifier = 0,
                     name = "My vault",
