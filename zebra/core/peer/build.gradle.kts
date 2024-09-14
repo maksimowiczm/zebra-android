@@ -1,13 +1,17 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.serialization)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.dagger.hilt.android)
 }
 
 android {
-    namespace = "com.maksimowiczm.zebra.core.data"
+    namespace = "com.maksimowiczm.zebra.core.peer"
     compileSdk = libs.versions.compileSdk.get().toInt()
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
@@ -24,6 +28,10 @@ android {
                 "proguard-rules.pro"
             )
         }
+        debug {
+            val WS_SERVER: String by project
+            buildConfigField("String", "WS_SOCKET", WS_SERVER)
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -36,20 +44,21 @@ android {
 
 dependencies {
 
-    implementation(project(":zebra:core:database"))
-    implementation(project(":zebra:core:datastore"))
-
-    // Kotpass
-    implementation(libs.kotpass)
-
-    // Result monad
+    // Result
     implementation(libs.kotlin.result)
-    implementation(project(":zebra:core:common"))
-    implementation(project(":zebra:core:peer"))
 
     // Hilt
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
+
+    // OkHttp
+    implementation(libs.okhttp)
+
+    // WebRTC
+    implementation(libs.stream.webrtc.android)
+
+    // Serialization
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
