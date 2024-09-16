@@ -11,4 +11,7 @@ import dagger.hilt.components.SingletonComponent
 internal object DaoModule {
     @Provides
     fun provideVaultDao(database: ZebraDatabase) = database.vaultDao()
+
+    @Provides
+    fun provideCredentialsDao(database: ZebraDatabase) = database.credentialsDao()
 }

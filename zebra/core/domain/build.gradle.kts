@@ -36,6 +36,7 @@ android {
 
 dependencies {
 
+    implementation(project(":zebra:core:biometry"))
     implementation(project(":zebra:core:data"))
 
     // Result monad

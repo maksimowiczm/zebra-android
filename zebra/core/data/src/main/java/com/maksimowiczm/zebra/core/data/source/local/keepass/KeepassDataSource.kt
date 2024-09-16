@@ -41,6 +41,10 @@ class KeepassDataSource(
     fun observeDatabase(identifier: Long) =
         databaseFlow.map { it.getOrDefault(identifier, VaultStatus.Locked) }
 
+    fun getDatabaseStatus(identifier: Long): VaultStatus {
+        return databaseFlow.value[identifier] ?: return VaultStatus.Locked
+    }
+
     fun lock(identifier: Long) {
         // drop database from map
         databaseFlow.update { it.minus(identifier) }

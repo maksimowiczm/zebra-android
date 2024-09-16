@@ -1,5 +1,6 @@
 package com.maksimowiczm.zebra.feature.vault.opened
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -41,24 +43,31 @@ import com.maksimowiczm.zebra.feature_vault.R
 @Composable
 internal fun OpenedVaultScreen(
     onNavigateUp: () -> Unit,
-    onLost: () -> Unit,
+    onClose: () -> Unit,
     viewModel: OpenedVaultViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     BackHandler {
         onNavigateUp()
     }
 
     LaunchedEffect(state) {
+        if (state is OpenVaultUiState.Closed) {
+            Toast.makeText(context, "Closed", Toast.LENGTH_SHORT).show()
+            onClose()
+        }
+
         if (state is OpenVaultUiState.Lost) {
-            onLost()
+            onNavigateUp()
         }
     }
 
     when (state) {
         OpenVaultUiState.Loading,
         OpenVaultUiState.Lost,
+        OpenVaultUiState.Closed,
         -> LoadingScreen()
 
         is OpenVaultUiState.Unlocked -> {

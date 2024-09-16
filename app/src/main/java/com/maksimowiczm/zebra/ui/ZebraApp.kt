@@ -27,7 +27,10 @@ fun ZebraApp(
                     navController = navController,
                     startDestination = VaultRoute,
                 ) {
-                    vaultGraph(navController)
+                    vaultGraph(
+                        navController = navController,
+                        biometricManager = biometricManager
+                    )
                 }
             }
         }

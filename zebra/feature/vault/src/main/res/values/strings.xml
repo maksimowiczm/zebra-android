@@ -28,4 +28,8 @@
     <string name="copy_username">Copy username</string>
     <string name="copy_password">Copy password</string>
     <string name="copy_url">Copy Url</string>
+    <string name="setup_biometrics">Setup Biometrics</string>
+    <string name="setup_biometrics_description">You can save vault credentials using biometrics. It will be stored encrypted in your device\'s internal storage. Credentials will be decrypted only when you unlock vault.</string>
+    <string name="setup">Setup</string>
+    <string name="use_biometrics">Use biometrics</string>
 </resources>
