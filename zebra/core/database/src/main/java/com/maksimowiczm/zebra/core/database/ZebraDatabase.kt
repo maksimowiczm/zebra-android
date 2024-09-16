@@ -10,7 +10,6 @@ import com.maksimowiczm.zebra.core.database.model.VaultEntity
         VaultEntity::class,
     ],
     version = 1,
-    exportSchema = false,
 )
 internal abstract class ZebraDatabase : RoomDatabase() {
     abstract fun vaultDao(): VaultDao
