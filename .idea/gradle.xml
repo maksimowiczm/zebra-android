@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/zebra" />
             <option value="$PROJECT_DIR$/zebra/core" />
+            <option value="$PROJECT_DIR$/zebra/core/biometry" />
             <option value="$PROJECT_DIR$/zebra/core/clipboard" />
             <option value="$PROJECT_DIR$/zebra/core/common" />
             <option value="$PROJECT_DIR$/zebra/core/common-ui" />

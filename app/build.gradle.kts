@@ -55,6 +55,7 @@ android {
 
 dependencies {
 
+    implementation(project(":zebra:core:biometry"))
     implementation(project(":zebra:core:common-ui"))
     implementation(project(":zebra:feature:vault"))
 

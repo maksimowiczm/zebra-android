@@ -24,8 +24,10 @@ roomRuntime = "2.6.1"
 kotlinResult = "2.0.0"
 kotlinxCoroutinesCore = "1.9.0-RC.2"
 kotpass = "0.10.0"
+biometric = "1.2.0-alpha05"
 
 [libraries]
+androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
