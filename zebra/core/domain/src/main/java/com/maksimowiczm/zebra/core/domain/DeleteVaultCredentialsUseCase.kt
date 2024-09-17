@@ -7,6 +7,9 @@ import javax.inject.Inject
 class DeleteVaultCredentialsUseCase @Inject constructor(
     private val credentialsRepository: SealedCredentialsRepository,
 ) {
+    /**
+     * Deletes vault credentials with the given vault identifier.
+     */
     suspend operator fun invoke(identifier: VaultIdentifier) {
         credentialsRepository.deleteCredentials(identifier)
     }

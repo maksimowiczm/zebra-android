@@ -110,7 +110,6 @@ internal class UnlockVaultViewModel @Inject constructor(
                     }
 
                     GetVaultCredentialsError.PermanentlyInvalidated -> {
-                        deleteVaultCredentialsUseCase(identifier)
                         _biometricsInvalidated.emit(true)
                     }
                 }
@@ -135,10 +134,12 @@ internal class UnlockVaultViewModel @Inject constructor(
         return false
     }
 
-    fun onBiometricsInvalidatedAcknowledge() {
+    fun onBiometricsInvalidatedAcknowledge(acknowledged: Boolean) {
         viewModelScope.launch {
             _biometricsInvalidated.emit(false)
-            deleteVaultCredentialsUseCase(identifier)
+            if (acknowledged) {
+                deleteVaultCredentialsUseCase(identifier)
+            }
         }
     }
 

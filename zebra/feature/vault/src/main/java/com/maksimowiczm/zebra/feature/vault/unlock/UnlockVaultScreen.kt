@@ -108,7 +108,7 @@ internal fun UnlockVaultScreen(
             hasBiometrics = hasBiometrics,
             onUseBiometrics = onBiometrics,
             biometricsInvalidated = (state as VaultUiState.VaultFound).biometricsInvalidated,
-            onBiometricsInvalidatedAcknowledge = { viewModel.onBiometricsInvalidatedAcknowledge() },
+            onBiometricsInvalidatedAcknowledge = { viewModel.onBiometricsInvalidatedAcknowledge(it) },
         )
 
         VaultUiState.Error -> SomethingWentWrongScreen(
@@ -136,11 +136,11 @@ private fun PasswordScreen(
     hasBiometrics: Boolean,
     onUseBiometrics: () -> Unit,
     biometricsInvalidated: Boolean = false,
-    onBiometricsInvalidatedAcknowledge: () -> Unit = {},
+    onBiometricsInvalidatedAcknowledge: (Boolean) -> Unit = {},
 ) {
     if (biometricsInvalidated) {
         AlertDialog(
-            onDismissRequest = {},
+            onDismissRequest = { onBiometricsInvalidatedAcknowledge(false) },
             title = {
                 Text(
                     text = "Biometrics invalidated",
@@ -148,13 +148,15 @@ private fun PasswordScreen(
                 )
             },
             text = {
-                Text(
-                    text = "Biometrics have been invalidated. You have to setup them again.",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                Column {
+                    Text(
+                        text = "Biometrics have been invalidated. You have to setup them again.",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             },
             confirmButton = {
-                Button(onClick = { onBiometricsInvalidatedAcknowledge() }) {
+                Button(onClick = { onBiometricsInvalidatedAcknowledge(true) }) {
                     Text("OK")
                 }
             },
@@ -371,6 +373,25 @@ private fun LoadingScreenPreview() {
     ZebraTheme {
         Surface {
             LoadingScreen()
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun CredentialsInvalidatedPreview() {
+    ZebraTheme {
+        Surface {
+            PasswordScreen(
+                onNavigateUp = {},
+                onUnlock = {},
+                failed = false,
+                hasBiometrics = false,
+                unlocking = false,
+                onUseBiometrics = {},
+                biometricsInvalidated = true,
+                onBiometricsInvalidatedAcknowledge = {}
+            )
         }
     }
 }

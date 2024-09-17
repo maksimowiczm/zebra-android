@@ -11,8 +11,10 @@ sealed interface DecryptError {
     data object Unknown : DecryptError
 }
 
+typealias CryptoIdentifier = ByteArray
+
 interface CryptoContext {
-    suspend fun getIdentifier(): ByteArray
+    suspend fun getIdentifier(): CryptoIdentifier
     suspend fun encrypt(data: ByteArray): Result<ByteArray, EncryptError>
     suspend fun decrypt(data: ByteArray): Result<ByteArray, DecryptError>
 }

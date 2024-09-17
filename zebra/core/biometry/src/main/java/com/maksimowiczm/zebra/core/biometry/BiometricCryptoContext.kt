@@ -70,6 +70,7 @@ class BiometricCryptoContext(
         keyGenerator.init(builder.build())
         keyGenerator.generateKey()
 
+        Log.d(TAG, "Generating new biometric identifier")
         // Make sure that new identifier is different from the current one.
         val currentIdentifier = getIdentifier()
         val identifier = ByteArray(8)
