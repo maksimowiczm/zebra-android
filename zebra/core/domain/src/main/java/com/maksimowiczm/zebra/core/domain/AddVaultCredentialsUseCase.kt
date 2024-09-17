@@ -3,15 +3,15 @@ package com.maksimowiczm.zebra.core.domain
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.getOrElse
 import com.maksimowiczm.zebra.core.data.crypto.CryptoContext
-import com.maksimowiczm.zebra.core.data.crypto.CryptoResult
+import com.maksimowiczm.zebra.core.data.crypto.EncryptError
 import com.maksimowiczm.zebra.core.data.model.SealedVaultCredentials
 import com.maksimowiczm.zebra.core.data.model.UnsealedVaultCredentials
 import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
 import com.maksimowiczm.zebra.core.data.repository.SealedCredentialsRepository
 
 sealed interface AddVaultCredentialsError {
-    data object PermanentlyInvalidated : AddVaultCredentialsError
     data object Unknown : AddVaultCredentialsError
 }
 
@@ -23,25 +23,22 @@ class AddVaultCredentialsUseCase(
         identifier: VaultIdentifier,
         credentials: UnsealedVaultCredentials,
     ): Result<Unit, AddVaultCredentialsError> {
-        val result = when (credentials) {
+        val data = when (credentials) {
             is UnsealedVaultCredentials.Password -> {
                 cryptoContext.encrypt(credentials.password.toByteArray())
             }
-        }
-
-        val data = when (result) {
-            CryptoResult.Failed -> return Err(AddVaultCredentialsError.Unknown)
-            CryptoResult.PermanentlyInvalidated -> {
-                credentialsRepository.deleteAllCredentials()
-                return Err(AddVaultCredentialsError.PermanentlyInvalidated)
+        }.getOrElse {
+            when (it) {
+                EncryptError.Unknown -> return Err(AddVaultCredentialsError.Unknown)
             }
-
-            is CryptoResult.Success -> result.data
         }
 
         credentialsRepository.upsertCredentials(
             vaultIdentifier = identifier,
-            credentials = SealedVaultCredentials.Password(data)
+            credentials = SealedVaultCredentials.Password(
+                cryptoIdentifier = cryptoContext.getIdentifier(),
+                data = data
+            )
         )
 
         return Ok(Unit)

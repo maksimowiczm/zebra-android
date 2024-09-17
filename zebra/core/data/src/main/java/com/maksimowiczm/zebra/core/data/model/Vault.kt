@@ -10,16 +10,22 @@ data class Vault(
     val name: String,
     val path: Uri,
     val pathBroken: Boolean = true,
-    val hasBiometrics: Boolean = false,
+    val biometricsStatus: VaultBiometricsStatus = VaultBiometricsStatus.NotSet,
 )
+
+sealed interface VaultBiometricsStatus {
+    data object NotSet : VaultBiometricsStatus
+    data object Enabled : VaultBiometricsStatus
+    data object Broken : VaultBiometricsStatus
+}
 
 internal fun VaultEntity.asVault(
     pathBroken: Boolean,
-    hasBiometrics: Boolean,
+    biometricsStatus: VaultBiometricsStatus,
 ): Vault = Vault(
     identifier = identifier,
     name = name,
     path = Uri.parse(path),
     pathBroken = pathBroken,
-    hasBiometrics = hasBiometrics
+    biometricsStatus = biometricsStatus
 )

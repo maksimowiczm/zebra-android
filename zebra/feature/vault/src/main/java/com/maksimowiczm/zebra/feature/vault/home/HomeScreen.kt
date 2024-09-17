@@ -43,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
 import com.maksimowiczm.zebra.core.data.model.Vault
+import com.maksimowiczm.zebra.core.data.model.VaultBiometricsStatus
 import com.maksimowiczm.zebra.feature_vault.R
 
 @Composable
@@ -231,16 +232,27 @@ private fun VaultListItem(
             )
         },
         trailingContent = {
-            if (vault.hasBiometrics) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_fingerprint),
-                    contentDescription = "Vault has biometrics."
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = stringResource(R.string.open_vault),
-                )
+            when (vault.biometricsStatus) {
+                VaultBiometricsStatus.Broken -> {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_fingerprint_off),
+                        contentDescription = "Vault has biometrics."
+                    )
+                }
+
+                VaultBiometricsStatus.Enabled -> {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_fingerprint),
+                        contentDescription = "Vault has biometrics."
+                    )
+                }
+
+                VaultBiometricsStatus.NotSet -> {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = stringResource(R.string.open_vault),
+                    )
+                }
             }
         },
     )

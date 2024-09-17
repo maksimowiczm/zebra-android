@@ -1,5 +1,6 @@
 package com.maksimowiczm.zebra.feature.vault.unlock
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,11 +9,12 @@ import com.github.michaelbull.result.getOrElse
 import com.maksimowiczm.zebra.core.biometry.BiometricManager
 import com.maksimowiczm.zebra.core.common.combineN
 import com.maksimowiczm.zebra.core.data.model.UnsealedVaultCredentials
+import com.maksimowiczm.zebra.core.data.model.VaultStatus
+import com.maksimowiczm.zebra.core.data.repository.SealedCredentialsRepository
 import com.maksimowiczm.zebra.core.data.repository.UnlockError
 import com.maksimowiczm.zebra.core.data.repository.UnlockRepository
 import com.maksimowiczm.zebra.core.data.repository.VaultRepository
-import com.maksimowiczm.zebra.core.data.model.VaultStatus
-import com.maksimowiczm.zebra.core.data.repository.SealedCredentialsRepository
+import com.maksimowiczm.zebra.core.domain.DeleteVaultCredentialsUseCase
 import com.maksimowiczm.zebra.core.domain.GetVaultCredentialsError
 import com.maksimowiczm.zebra.core.domain.GetVaultCredentialsUseCase
 import com.maksimowiczm.zebra.feature.vault.VaultScreen
@@ -30,10 +32,12 @@ internal class UnlockVaultViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val unlockRepository: UnlockRepository,
     private val credentialsRepository: SealedCredentialsRepository,
+    private val deleteVaultCredentialsUseCase: DeleteVaultCredentialsUseCase,
 ) : ViewModel() {
     private val identifier = savedStateHandle.toRoute<VaultScreen.UnlockVaultScreen>().identifier
 
     private val _openingError = MutableStateFlow(false)
+    private val _biometricsInvalidated = MutableStateFlow(false)
 
     private val hasCredentials = credentialsRepository
         .observeCredentialsAvailable(vaultIdentifier = identifier)
@@ -46,14 +50,15 @@ internal class UnlockVaultViewModel @Inject constructor(
     val state: StateFlow<VaultUiState> = combineN(
         vaultRepository.observeVaultByIdentifier(identifier),
         unlockRepository.observeVaultStatus(identifier),
-        _openingError
-    ) { vault, unlockStatus, err ->
+        _openingError,
+        _biometricsInvalidated
+    ) { vault, unlockStatus, err, biometricsError ->
         if (vault == null || err) {
             return@combineN VaultUiState.Error
         }
 
         return@combineN when (unlockStatus) {
-            VaultStatus.Locked -> VaultUiState.VaultFound(vault)
+            VaultStatus.Locked -> VaultUiState.VaultFound(vault, biometricsError)
             VaultStatus.Unlocking -> VaultUiState.Unlocking
             is VaultStatus.Unlocked -> VaultUiState.Unlocked
             is VaultStatus.Failed -> VaultUiState.PasswordFailed
@@ -96,8 +101,18 @@ internal class UnlockVaultViewModel @Inject constructor(
 
             val credentials = getCredentials(identifier).getOrElse {
                 when (it) {
-                    GetVaultCredentialsError.NotFound, GetVaultCredentialsError.Unknown -> {}
-                    GetVaultCredentialsError.PermanentlyInvalidated -> {}
+                    GetVaultCredentialsError.NotFound -> {
+                        Log.d(TAG, "Vault credentials not found")
+                    }
+
+                    is GetVaultCredentialsError.Unknown -> {
+                        // most likely user cancelled the biometric prompt
+                    }
+
+                    GetVaultCredentialsError.PermanentlyInvalidated -> {
+                        deleteVaultCredentialsUseCase(identifier)
+                        _biometricsInvalidated.emit(true)
+                    }
                 }
 
                 return@launch
@@ -118,5 +133,16 @@ internal class UnlockVaultViewModel @Inject constructor(
         }
 
         return false
+    }
+
+    fun onBiometricsInvalidatedAcknowledge() {
+        viewModelScope.launch {
+            _biometricsInvalidated.emit(false)
+            deleteVaultCredentialsUseCase(identifier)
+        }
+    }
+
+    companion object {
+        private const val TAG = "UnlockVaultViewModel"
     }
 }

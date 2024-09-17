@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "2067a65009ee4f56a23583fca9df7a51",
+    "identityHash": "8720b6a6ce98e42a1e07a7ea03d74d2b",
     "entities": [
       {
         "tableName": "VaultEntity",
@@ -38,7 +38,7 @@
       },
       {
         "tableName": "CredentialsEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`vaultIdentifier` INTEGER NOT NULL, `data` BLOB NOT NULL, `type` TEXT NOT NULL, PRIMARY KEY(`vaultIdentifier`), FOREIGN KEY(`vaultIdentifier`) REFERENCES `VaultEntity`(`identifier`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`vaultIdentifier` INTEGER NOT NULL, `data` BLOB NOT NULL, `type` TEXT NOT NULL, `cryptoIdentifier` BLOB NOT NULL, PRIMARY KEY(`vaultIdentifier`), FOREIGN KEY(`vaultIdentifier`) REFERENCES `VaultEntity`(`identifier`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "vaultIdentifier",
@@ -56,6 +56,12 @@
             "fieldPath": "type",
             "columnName": "type",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cryptoIdentifier",
+            "columnName": "cryptoIdentifier",
+            "affinity": "BLOB",
             "notNull": true
           }
         ],
@@ -84,7 +90,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2067a65009ee4f56a23583fca9df7a51')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8720b6a6ce98e42a1e07a7ea03d74d2b')"
     ]
   }
 }

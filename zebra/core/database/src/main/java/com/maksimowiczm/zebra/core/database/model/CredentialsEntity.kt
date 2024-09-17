@@ -18,6 +18,7 @@ data class CredentialsEntity(
     val vaultIdentifier: Long,
     val data: ByteArray,
     val type: CredentialsType,
+    val cryptoIdentifier: ByteArray,
 )
 
 enum class CredentialsType {

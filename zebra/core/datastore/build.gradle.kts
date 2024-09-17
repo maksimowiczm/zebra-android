@@ -1,12 +1,13 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.google.protobuf)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.dagger.hilt.android)
 }
 
 android {
-    namespace = "com.maksimowiczm.zebra.core.biometry"
+    namespace = "com.maksimowiczm.zebra.core.datastore"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -36,17 +37,15 @@ android {
 
 dependencies {
 
-    implementation(project(":zebra:core:data"))
-
-    // Result
-    implementation(libs.kotlin.result)
-
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
-    // Biometric
-    implementation(libs.androidx.biometric)
+    // Datastore
+    implementation(libs.androidx.datastore)
+
+    // Protobuf
+    implementation(libs.protobuf.javalite)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -54,4 +53,20 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${libs.versions.protobufJavalite.get()}"
+    }
+    generateProtoTasks {
+        all().forEach {
+            it.builtins {
+                create("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
 }

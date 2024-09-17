@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -106,6 +107,8 @@ internal fun UnlockVaultScreen(
             unlocking = false,
             hasBiometrics = hasBiometrics,
             onUseBiometrics = onBiometrics,
+            biometricsInvalidated = (state as VaultUiState.VaultFound).biometricsInvalidated,
+            onBiometricsInvalidatedAcknowledge = { viewModel.onBiometricsInvalidatedAcknowledge() },
         )
 
         VaultUiState.Error -> SomethingWentWrongScreen(
@@ -132,7 +135,32 @@ private fun PasswordScreen(
     unlocking: Boolean,
     hasBiometrics: Boolean,
     onUseBiometrics: () -> Unit,
+    biometricsInvalidated: Boolean = false,
+    onBiometricsInvalidatedAcknowledge: () -> Unit = {},
 ) {
+    if (biometricsInvalidated) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Text(
+                    text = "Biometrics invalidated",
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            },
+            text = {
+                Text(
+                    text = "Biometrics have been invalidated. You have to setup them again.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            },
+            confirmButton = {
+                Button(onClick = { onBiometricsInvalidatedAcknowledge() }) {
+                    Text("OK")
+                }
+            },
+        )
+    }
+
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 

@@ -37,6 +37,7 @@ android {
 dependencies {
 
     implementation(project(":zebra:core:database"))
+    implementation(project(":zebra:core:datastore"))
 
     // Kotpass
     implementation(libs.kotpass)

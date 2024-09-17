@@ -15,7 +15,10 @@ interface CredentialsDao {
     fun observeCredentials(): Flow<List<CredentialsEntity>>
 
     @Query("SELECT EXISTS(SELECT * FROM CredentialsEntity WHERE vaultIdentifier = :vaultIdentifier)")
-    fun observeCredentialsByIdentifier(vaultIdentifier: Long): Flow<Boolean>
+    fun observeHasCredentialsByIdentifier(vaultIdentifier: Long): Flow<Boolean>
+
+    @Query("SELECT * FROM CredentialsEntity WHERE vaultIdentifier = :vaultIdentifier")
+    fun observeCredentialsByIdentifier(vaultIdentifier: Long): Flow<CredentialsEntity?>
 
     @Upsert
     suspend fun upsertCredentials(credentials: CredentialsEntity)
@@ -23,6 +26,6 @@ interface CredentialsDao {
     @Query("DELETE FROM CredentialsEntity WHERE vaultIdentifier = :vaultIdentifier")
     suspend fun deleteCredentials(vaultIdentifier: Long)
 
-    @Query("DELETE FROM CredentialsEntity")
-    suspend fun deleteAllCredentials()
+    @Query("DELETE FROM CredentialsEntity WHERE cryptoIdentifier = :cryptoIdentifier")
+    suspend fun deleteAllCredentialsWithCryptoIdentifier(cryptoIdentifier: ByteArray)
 }

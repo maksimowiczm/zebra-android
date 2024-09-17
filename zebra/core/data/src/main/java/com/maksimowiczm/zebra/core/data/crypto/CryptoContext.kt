@@ -1,12 +1,18 @@
 package com.maksimowiczm.zebra.core.data.crypto
 
-sealed interface CryptoResult {
-    class Success(val data: ByteArray) : CryptoResult
-    data object PermanentlyInvalidated : CryptoResult
-    data object Failed : CryptoResult
+import com.github.michaelbull.result.Result
+
+sealed interface EncryptError {
+    data object Unknown : EncryptError
+}
+
+sealed interface DecryptError {
+    data object PermanentlyInvalidated : DecryptError
+    data object Unknown : DecryptError
 }
 
 interface CryptoContext {
-    suspend fun encrypt(data: ByteArray): CryptoResult
-    suspend fun decrypt(data: ByteArray): CryptoResult
+    suspend fun getIdentifier(): ByteArray
+    suspend fun encrypt(data: ByteArray): Result<ByteArray, EncryptError>
+    suspend fun decrypt(data: ByteArray): Result<ByteArray, DecryptError>
 }

@@ -4,24 +4,22 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import android.util.Log
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
 import com.maksimowiczm.zebra.core.data.crypto.CryptoContext
-import com.maksimowiczm.zebra.core.data.crypto.CryptoResult
+import com.maksimowiczm.zebra.core.data.crypto.DecryptError
+import com.maksimowiczm.zebra.core.data.crypto.EncryptError
+import com.maksimowiczm.zebra.core.data.repository.UserPreferencesRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import java.security.KeyStore
+import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
-
-
-// TODO [#1]
-// If key is invalidated on encrypt or decrypt the KeyPermanentlyInvalidatedException is thrown.
-// This exception should be handled and the key should be re-initialized.
-// Other services should be notified about the invalidation.
-// Maybe store random number which indicates the key version and invalidate the key when the number changes.
-// This would require persisting the number somewhere.
 
 /**
  * Context for encrypting and decrypting data using biometric authentication.
@@ -30,25 +28,25 @@ import javax.crypto.spec.GCMParameterSpec
 class BiometricCryptoContext(
     private val biometricManager: BiometricManager,
     private val defaultDispatcher: CoroutineDispatcher,
+    private val userPreferencesRepository: UserPreferencesRepository,
 ) : CryptoContext {
     private val keyStore: KeyStore
         get() = KeyStore.getInstance("AndroidKeyStore").apply {
             load(null)
         }
 
-    private val secretKey: SecretKey
-        get() {
-            val key = keyStore.getKey(ALIAS, null) as? SecretKey
-            if (key != null) {
-                return key
-            }
-
-            initializeKey()
-
-            return keyStore.getKey(ALIAS, null) as SecretKey
+    private suspend fun getSecretKey(): SecretKey {
+        val key = keyStore.getKey(ALIAS, null) as? SecretKey
+        if (key != null) {
+            return key
         }
 
-    private fun initializeKey() {
+        initializeKey()
+
+        return keyStore.getKey(ALIAS, null) as SecretKey
+    }
+
+    private suspend fun initializeKey() {
         Log.d(TAG, "Initializing key")
 
         val keyGenerator = KeyGenerator.getInstance(
@@ -71,6 +69,14 @@ class BiometricCryptoContext(
         Log.d(TAG, "Generating new key")
         keyGenerator.init(builder.build())
         keyGenerator.generateKey()
+
+        // Make sure that new identifier is different from the current one.
+        val currentIdentifier = getIdentifier()
+        val identifier = ByteArray(8)
+        do {
+            SecureRandom.getInstanceStrong().nextBytes(identifier)
+        } while (identifier.contentEquals(currentIdentifier))
+        userPreferencesRepository.setBiometricIdentifier(identifier)
     }
 
     private val cipher: Cipher
@@ -80,15 +86,21 @@ class BiometricCryptoContext(
                     + KeyProperties.ENCRYPTION_PADDING_NONE
         )
 
-    override suspend fun encrypt(data: ByteArray): CryptoResult {
+    override suspend fun getIdentifier(): ByteArray {
+        return userPreferencesRepository.getBiometricIdentifier()
+    }
+
+    override suspend fun encrypt(data: ByteArray): Result<ByteArray, EncryptError> {
         return withContext(defaultDispatcher) {
             val cipher = try {
                 cipher.apply {
-                    init(Cipher.ENCRYPT_MODE, secretKey)
+                    init(Cipher.ENCRYPT_MODE, getSecretKey())
                 }
             } catch (e: KeyPermanentlyInvalidatedException) {
                 initializeKey()
-                return@withContext CryptoResult.PermanentlyInvalidated
+                cipher.apply {
+                    init(Cipher.ENCRYPT_MODE, getSecretKey())
+                }
             }
 
             val authCipher = biometricManager.authenticate(cipher).firstOrNull {
@@ -98,7 +110,7 @@ class BiometricCryptoContext(
             }
 
             if (authCipher == null) {
-                return@withContext CryptoResult.Failed
+                return@withContext Err(EncryptError.Unknown)
             }
 
             val encrypted = authCipher.doFinal(data)
@@ -108,26 +120,22 @@ class BiometricCryptoContext(
             System.arraycopy(iv, 0, combined, 0, iv.size)
             System.arraycopy(encrypted, 0, combined, iv.size, encrypted.size)
 
-            CryptoResult.Success(combined)
+            Ok(combined)
         }
     }
 
-    override suspend fun decrypt(data: ByteArray): CryptoResult {
+    override suspend fun decrypt(data: ByteArray): Result<ByteArray, DecryptError> {
         return withContext(defaultDispatcher) {
-            val encrypted = data.copyOfRange(12, data.size)
             val iv = data.copyOfRange(0, 12)
+            val encrypted = data.copyOfRange(12, data.size)
 
             val cipher = try {
                 cipher.apply {
-                    init(
-                        Cipher.DECRYPT_MODE,
-                        keyStore.getKey(ALIAS, null),
-                        GCMParameterSpec(128, iv)
-                    )
+                    init(Cipher.DECRYPT_MODE, getSecretKey(), GCMParameterSpec(128, iv))
                 }
             } catch (e: KeyPermanentlyInvalidatedException) {
                 initializeKey()
-                return@withContext CryptoResult.PermanentlyInvalidated
+                return@withContext Err(DecryptError.PermanentlyInvalidated)
             }
 
             val authCipher = biometricManager.authenticate(cipher).firstOrNull {
@@ -137,12 +145,12 @@ class BiometricCryptoContext(
             }
 
             if (authCipher == null) {
-                return@withContext CryptoResult.Failed
+                return@withContext Err(DecryptError.Unknown)
             }
 
             val final = authCipher.doFinal(encrypted)
 
-            CryptoResult.Success(final)
+            Ok(final)
         }
     }
 

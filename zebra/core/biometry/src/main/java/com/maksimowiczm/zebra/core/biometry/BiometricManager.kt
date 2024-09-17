@@ -7,6 +7,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.CryptoObject
 import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.fragment.app.FragmentActivity
+import com.maksimowiczm.zebra.core.data.repository.UserPreferencesRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +33,7 @@ class BiometricManager(
     private val fragmentActivity: FragmentActivity,
     private val mainDispatcher: CoroutineDispatcher, // UI thread
     private val defaultDispatcher: CoroutineDispatcher, // CPU bound work
+    private val userPreferencesRepository: UserPreferencesRepository,
 ) {
     private val biometricManager = AndroidBiometricManager.from(fragmentActivity)
 
@@ -111,7 +113,8 @@ class BiometricManager(
     val cryptoContext
         get() = BiometricCryptoContext(
             biometricManager = this,
-            defaultDispatcher = defaultDispatcher
+            defaultDispatcher = defaultDispatcher,
+            userPreferencesRepository = userPreferencesRepository,
         )
 
     companion object {

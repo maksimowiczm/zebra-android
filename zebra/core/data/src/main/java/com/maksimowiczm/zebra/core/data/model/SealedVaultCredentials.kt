@@ -1,5 +1,10 @@
 package com.maksimowiczm.zebra.core.data.model
 
 sealed interface SealedVaultCredentials {
-    class Password(val data: ByteArray) : SealedVaultCredentials
+    val cryptoIdentifier: ByteArray
+
+    class Password(
+        override val cryptoIdentifier: ByteArray,
+        val data: ByteArray,
+    ) : SealedVaultCredentials
 }
