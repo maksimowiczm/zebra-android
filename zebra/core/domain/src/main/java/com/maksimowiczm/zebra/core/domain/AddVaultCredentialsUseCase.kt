@@ -11,6 +11,7 @@ import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
 import com.maksimowiczm.zebra.core.data.repository.SealedCredentialsRepository
 
 sealed interface AddVaultCredentialsError {
+    data object PermanentlyInvalidated : AddVaultCredentialsError
     data object Unknown : AddVaultCredentialsError
 }
 
@@ -30,6 +31,11 @@ class AddVaultCredentialsUseCase(
 
         val data = when (result) {
             CryptoResult.Failed -> return Err(AddVaultCredentialsError.Unknown)
+            CryptoResult.PermanentlyInvalidated -> {
+                credentialsRepository.deleteAllCredentials()
+                return Err(AddVaultCredentialsError.PermanentlyInvalidated)
+            }
+
             is CryptoResult.Success -> result.data
         }
 

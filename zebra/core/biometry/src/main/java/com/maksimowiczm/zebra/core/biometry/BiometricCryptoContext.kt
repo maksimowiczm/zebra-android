@@ -1,6 +1,7 @@
 package com.maksimowiczm.zebra.core.biometry
 
 import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import android.util.Log
 import com.maksimowiczm.zebra.core.data.crypto.CryptoContext
@@ -81,8 +82,13 @@ class BiometricCryptoContext(
 
     override suspend fun encrypt(data: ByteArray): CryptoResult {
         return withContext(defaultDispatcher) {
-            val cipher = cipher.apply {
-                init(Cipher.ENCRYPT_MODE, secretKey)
+            val cipher = try {
+                cipher.apply {
+                    init(Cipher.ENCRYPT_MODE, secretKey)
+                }
+            } catch (e: KeyPermanentlyInvalidatedException) {
+                initializeKey()
+                return@withContext CryptoResult.PermanentlyInvalidated
             }
 
             val authCipher = biometricManager.authenticate(cipher).firstOrNull {
@@ -111,12 +117,17 @@ class BiometricCryptoContext(
             val encrypted = data.copyOfRange(12, data.size)
             val iv = data.copyOfRange(0, 12)
 
-            val cipher = cipher.apply {
-                init(
-                    Cipher.DECRYPT_MODE,
-                    keyStore.getKey(ALIAS, null),
-                    GCMParameterSpec(128, iv)
-                )
+            val cipher = try {
+                cipher.apply {
+                    init(
+                        Cipher.DECRYPT_MODE,
+                        keyStore.getKey(ALIAS, null),
+                        GCMParameterSpec(128, iv)
+                    )
+                }
+            } catch (e: KeyPermanentlyInvalidatedException) {
+                initializeKey()
+                return@withContext CryptoResult.PermanentlyInvalidated
             }
 
             val authCipher = biometricManager.authenticate(cipher).firstOrNull {

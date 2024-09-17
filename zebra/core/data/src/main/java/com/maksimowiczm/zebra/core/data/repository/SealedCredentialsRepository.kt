@@ -34,8 +34,8 @@ class SealedCredentialsRepository @Inject constructor(
         credentialsDao.upsertCredentials(entity)
     }
 
-    suspend fun deleteCredentials(vaultIdentifier: VaultIdentifier) {
-        credentialsDao.deleteCredentials(vaultIdentifier)
+    suspend fun deleteAllCredentials() {
+        credentialsDao.deleteAllCredentials()
     }
 }
 

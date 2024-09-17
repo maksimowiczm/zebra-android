@@ -19,4 +19,7 @@ interface CredentialsDao {
 
     @Query("DELETE FROM CredentialsEntity WHERE vaultIdentifier = :vaultIdentifier")
     suspend fun deleteCredentials(vaultIdentifier: Long)
+
+    @Query("DELETE FROM CredentialsEntity")
+    suspend fun deleteAllCredentials()
 }

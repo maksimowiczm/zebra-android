@@ -1,6 +1,5 @@
 package com.maksimowiczm.zebra.feature.vault.biometrics
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -38,8 +37,6 @@ class BiometricsViewModel @Inject constructor(
             unlockRepository.unlock(identifier, UnsealedVaultCredentials.Password(password))
 
             unlockRepository.observeVaultStatus(identifier).collectLatest { status ->
-                Log.d(TAG, "onSetup: $status")
-
                 if (status is VaultStatus.Unlocked) {
                     val addUseCase = AddVaultCredentialsUseCase(
                         cryptoContext = biometricManager.cryptoContext,
@@ -55,9 +52,5 @@ class BiometricsViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    companion object {
-        private const val TAG = "BiometricsViewModel"
     }
 }

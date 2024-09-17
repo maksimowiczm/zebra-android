@@ -13,6 +13,7 @@ import com.maksimowiczm.zebra.core.data.repository.UnlockRepository
 import com.maksimowiczm.zebra.core.data.repository.VaultRepository
 import com.maksimowiczm.zebra.core.data.model.VaultStatus
 import com.maksimowiczm.zebra.core.data.repository.SealedCredentialsRepository
+import com.maksimowiczm.zebra.core.domain.GetVaultCredentialsError
 import com.maksimowiczm.zebra.core.domain.GetVaultCredentialsUseCase
 import com.maksimowiczm.zebra.feature.vault.VaultScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -93,7 +94,14 @@ internal class UnlockVaultViewModel @Inject constructor(
                 credentialsRepository = credentialsRepository
             )
 
-            val credentials = getCredentials(identifier) ?: return@launch
+            val credentials = getCredentials(identifier).getOrElse {
+                when (it) {
+                    GetVaultCredentialsError.NotFound, GetVaultCredentialsError.Unknown -> {}
+                    GetVaultCredentialsError.PermanentlyInvalidated -> {}
+                }
+
+                return@launch
+            }
 
             unlockRepository.unlock(identifier, credentials)
         }

@@ -2,6 +2,7 @@ package com.maksimowiczm.zebra.core.data.crypto
 
 sealed interface CryptoResult {
     class Success(val data: ByteArray) : CryptoResult
+    data object PermanentlyInvalidated : CryptoResult
     data object Failed : CryptoResult
 }
 
