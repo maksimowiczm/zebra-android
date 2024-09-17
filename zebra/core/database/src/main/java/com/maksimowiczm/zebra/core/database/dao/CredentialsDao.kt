@@ -11,8 +11,11 @@ interface CredentialsDao {
     @Query("SELECT * FROM CredentialsEntity WHERE vaultIdentifier = :vaultIdentifier")
     suspend fun getCredentials(vaultIdentifier: Long): CredentialsEntity?
 
+    @Query("SELECT * FROM CredentialsEntity")
+    fun observeCredentials(): Flow<List<CredentialsEntity>>
+
     @Query("SELECT EXISTS(SELECT * FROM CredentialsEntity WHERE vaultIdentifier = :vaultIdentifier)")
-    fun observeCredentials(vaultIdentifier: Long): Flow<Boolean>
+    fun observeCredentialsByIdentifier(vaultIdentifier: Long): Flow<Boolean>
 
     @Upsert
     suspend fun upsertCredentials(credentials: CredentialsEntity)

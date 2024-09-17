@@ -168,7 +168,7 @@ private fun Content(
 
 @Composable
 fun Empty(
-    onImport: () -> Unit
+    onImport: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -209,7 +209,7 @@ private fun VaultList(
                 )
             } else {
                 VaultListItem(
-                    name = vault.name,
+                    vault = vault,
                     onClick = { onClick(vault) }
                 )
             }
@@ -219,22 +219,29 @@ private fun VaultList(
 
 @Composable
 private fun VaultListItem(
-    name: String,
+    vault: Vault,
     onClick: () -> Unit,
 ) {
     ListItem(
         modifier = Modifier.clickable { onClick() },
         headlineContent = {
             Text(
-                text = name,
+                text = vault.name,
                 style = MaterialTheme.typography.bodyLarge,
             )
         },
         trailingContent = {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = stringResource(R.string.open_vault),
-            )
+            if (vault.hasBiometrics) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_fingerprint),
+                    contentDescription = "Vault has biometrics."
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = stringResource(R.string.open_vault),
+                )
+            }
         },
     )
 }

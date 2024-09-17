@@ -13,6 +13,7 @@ internal class VaultListProvider : PreviewParameterProvider<List<Vault>> {
                 name = "My vault",
                 path = "/path/to/my/vault".toUri(),
                 pathBroken = false,
+                hasBiometrics = true,
             ),
             Vault(
                 identifier = 1,
@@ -27,6 +28,7 @@ internal class VaultListProvider : PreviewParameterProvider<List<Vault>> {
                 name = "Vault $it",
                 path = "/path/to/vault/$it".toUri(),
                 pathBroken = it % 4L == 3L,
+                hasBiometrics = it % 2L == 0L,
             )
         }
     )

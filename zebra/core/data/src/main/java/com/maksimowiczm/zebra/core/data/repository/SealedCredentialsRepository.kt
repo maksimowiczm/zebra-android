@@ -12,7 +12,7 @@ class SealedCredentialsRepository @Inject constructor(
     private val credentialsDao: CredentialsDao,
 ) {
     fun observeCredentialsAvailable(vaultIdentifier: VaultIdentifier): Flow<Boolean> {
-        return credentialsDao.observeCredentials(vaultIdentifier)
+        return credentialsDao.observeCredentialsByIdentifier(vaultIdentifier)
     }
 
     suspend fun getCredentials(vaultIdentifier: VaultIdentifier): SealedVaultCredentials? {
@@ -27,7 +27,7 @@ class SealedCredentialsRepository @Inject constructor(
             is SealedVaultCredentials.Password -> CredentialsEntity(
                 vaultIdentifier = vaultIdentifier,
                 data = credentials.data,
-                type = CredentialsType.Password
+                type = CredentialsType.Password,
             )
         }
 
