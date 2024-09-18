@@ -5,4 +5,5 @@ sealed interface BiometricsUiState {
     data object Success : BiometricsUiState
     data object Loading : BiometricsUiState
     data object Failed : BiometricsUiState
+    data object Canceled : BiometricsUiState
 }

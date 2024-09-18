@@ -111,7 +111,7 @@ class BiometricCryptoContext(
             }
 
             if (authCipher == null) {
-                return@withContext Err(EncryptError.Unknown)
+                return@withContext Err(EncryptError.Canceled)
             }
 
             val encrypted = authCipher.doFinal(data)
@@ -146,7 +146,7 @@ class BiometricCryptoContext(
             }
 
             if (authCipher == null) {
-                return@withContext Err(DecryptError.Unknown)
+                return@withContext Err(DecryptError.Canceled)
             }
 
             val final = authCipher.doFinal(encrypted)

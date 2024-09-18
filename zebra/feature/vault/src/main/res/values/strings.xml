@@ -3,7 +3,6 @@
     <string name="vaults">Vaults</string>
     <string name="import_vault">Import new vault</string>
     <string name="open_vault">Open vault</string>
-    <string name="seems_like_you_don_t_have_any_vaults_yet">Seems like you don\'t have any vaults yet.</string>
     <string name="seems_like_you_didn_t_pick_a_file">Seems like you haven\'t picked a file.</string>
     <string name="do_you_want_to_try_again">Do you want to try again?</string>
     <string name="retry">Retry</string>
@@ -32,4 +31,19 @@
     <string name="setup_biometrics_description">You can save vault credentials using biometrics. It will be stored encrypted in your device\'s internal storage. Credentials will be decrypted only when you unlock vault.</string>
     <string name="setup">Setup</string>
     <string name="use_biometrics">Use biometrics</string>
+    <string name="so_empty">So empty…</string>
+    <string name="add_vault">Add vault</string>
+    <string name="unlocked">Unlocked</string>
+    <string name="vault_imported">Vault imported</string>
+    <string name="import_error">Import error</string>
+    <string name="something_went_wrong">Something went wrong.</string>
+    <string name="import_">Import</string>
+    <string name="skip">Skip</string>
+    <string name="continue_">Continue</string>
+    <string name="enter_password">Enter password</string>
+    <string name="setup_vault">Setup vault</string>
+    <string name="biometrics_invalidated">Biometrics invalidated</string>
+    <string name="seems_like_you_enrolled_new_biometrics">Seems like you enrolled new biometrics.</string>
+    <string name="ok">OK</string>
+    <string name="cancelled">Cancelled</string>
 </resources>

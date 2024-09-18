@@ -3,11 +3,13 @@ package com.maksimowiczm.zebra.core.data.crypto
 import com.github.michaelbull.result.Result
 
 sealed interface EncryptError {
+    data object Canceled : EncryptError
     data object Unknown : EncryptError
 }
 
 sealed interface DecryptError {
     data object PermanentlyInvalidated : DecryptError
+    data object Canceled : DecryptError
     data object Unknown : DecryptError
 }
 

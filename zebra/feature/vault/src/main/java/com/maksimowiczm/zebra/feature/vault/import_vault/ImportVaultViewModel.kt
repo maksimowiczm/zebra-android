@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.getOrElse
+import com.maksimowiczm.zebra.core.data.repository.VaultRepository
 import com.maksimowiczm.zebra.core.domain.ImportUniqueVaultUseCase
 import com.maksimowiczm.zebra.core.domain.ImportVaultResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class ImportVaultViewModel @Inject constructor(
-    private val importUniqueVaultUseCase: ImportUniqueVaultUseCase
+    private val importUniqueVaultUseCase: ImportUniqueVaultUseCase,
+    private val vaultRepository: VaultRepository,
 ) : ViewModel() {
     private val _state = MutableStateFlow<ImportVaultUiState>(ImportVaultUiState.PickFile)
     val state = _state.asStateFlow()
@@ -32,9 +34,21 @@ internal class ImportVaultViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { ImportVaultUiState.Loading }
 
+            val existingVault = vaultRepository.getVaultByPath(uri.toString())
+
+            if (existingVault != null) {
+                _state.update { ImportVaultUiState.VaultExists(existingVault) }
+                return@launch
+            }
+
             val name = uri.getFileName()
             if (name == null) {
-                _state.update { ImportVaultUiState.IllegalFileName }
+                _state.update {
+                    ImportVaultUiState.FileReady(
+                        name = "vault",
+                        path = uri,
+                    )
+                }
                 return@launch
             }
 
@@ -68,17 +82,26 @@ internal class ImportVaultViewModel @Inject constructor(
                 name = state.name,
                 path = state.path
             ).getOrElse { err ->
-                val newState = when (err) {
-                    ImportVaultResult.FileError -> ImportVaultUiState.FileImportError
-                    is ImportVaultResult.VaultExists -> ImportVaultUiState.VaultExists(err.vault)
+                _state.update {
+                    when (err) {
+                        ImportVaultResult.FileError -> ImportVaultUiState.FileImportError
+                        is ImportVaultResult.VaultWithPathExists -> ImportVaultUiState.VaultExists(
+                            err.vault
+                        )
+                    }
                 }
-
-                _state.update { newState }
 
                 return@launch
             }
 
-            _state.update { ImportVaultUiState.Done }
+            val vault = vaultRepository.getVaultByPath(state.path.toString())
+
+            if (vault == null) {
+                _state.update { ImportVaultUiState.FileImportError }
+                return@launch
+            }
+
+            _state.update { ImportVaultUiState.Done(vault) }
         }
     }
 }

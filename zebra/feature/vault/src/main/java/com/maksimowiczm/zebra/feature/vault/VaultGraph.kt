@@ -7,7 +7,7 @@ import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.maksimowiczm.zebra.core.biometry.BiometricManager
 import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
-import com.maksimowiczm.zebra.feature.vault.biometrics.SetupScreen
+import com.maksimowiczm.zebra.feature.vault.biometrics.BiometricsSetupScreen
 import com.maksimowiczm.zebra.feature.vault.import_vault.ImportVaultScreen
 import com.maksimowiczm.zebra.feature.vault.home.HomeScreen
 import com.maksimowiczm.zebra.feature.vault.opened.OpenedVaultScreen
@@ -59,7 +59,14 @@ fun NavGraphBuilder.vaultGraph(
         }
         composable<VaultScreen.ImportVaultScreen> {
             ImportVaultScreen(
-                onNavigateUp = navigateToHome
+                onNavigateUp = navigateToHome,
+                onVaultExists = {
+                    navController.navigate(VaultScreen.UnlockVaultScreen(it.identifier))
+                },
+                biometricManager = biometricManager,
+                onBiometricsSetup = {
+                    navController.navigate(VaultScreen.BiometricsScreen(it.identifier))
+                }
             )
         }
         composable<VaultScreen.UnlockVaultScreen> {
@@ -67,11 +74,11 @@ fun NavGraphBuilder.vaultGraph(
 
             UnlockVaultScreen(
                 onNavigateUp = navigateToHome,
-                onOpen = {
+                onUnlocked = {
                     navController.navigate(VaultScreen.OpenedVaultScreen(route.identifier))
                 },
                 biometricManager = biometricManager,
-                onBiometrics = {
+                onBiometricsSetup = {
                     navController.navigate(VaultScreen.BiometricsScreen(route.identifier))
                 }
             )
@@ -83,9 +90,10 @@ fun NavGraphBuilder.vaultGraph(
             )
         }
         composable<VaultScreen.BiometricsScreen> {
-            SetupScreen(
+            BiometricsSetupScreen(
                 onNavigateUp = { navController.popBackStack() },
                 biometricManager = biometricManager,
+                onSuccess = { navController.navigate(VaultScreen.OpenedVaultScreen(it)) }
             )
         }
     }

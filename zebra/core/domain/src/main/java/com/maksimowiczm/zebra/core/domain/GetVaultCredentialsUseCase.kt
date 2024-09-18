@@ -14,6 +14,7 @@ import com.maksimowiczm.zebra.core.data.repository.SealedCredentialsRepository
 sealed interface GetVaultCredentialsError {
     data object PermanentlyInvalidated : GetVaultCredentialsError
     data object NotFound : GetVaultCredentialsError
+    data object Canceled : GetVaultCredentialsError
     data class Unknown(val t: Throwable? = null) : GetVaultCredentialsError
 }
 
@@ -39,6 +40,7 @@ class GetVaultCredentialsUseCase(
             return when (it) {
                 DecryptError.PermanentlyInvalidated -> Err(GetVaultCredentialsError.PermanentlyInvalidated)
                 DecryptError.Unknown -> Err(GetVaultCredentialsError.Unknown())
+                DecryptError.Canceled -> Err(GetVaultCredentialsError.Canceled)
             }
         }
 

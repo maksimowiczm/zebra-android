@@ -2,12 +2,10 @@ package com.maksimowiczm.zebra.feature.vault.biometrics
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -47,19 +45,21 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maksimowiczm.zebra.core.biometry.BiometricManager
 import com.maksimowiczm.zebra.core.common_ui.composable.BooleanParameterPreviewProvider
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
+import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
 import com.maksimowiczm.zebra.feature_vault.R
 
 @Composable
-internal fun SetupScreen(
+internal fun BiometricsSetupScreen(
     viewModel: BiometricsViewModel = hiltViewModel(),
     biometricManager: BiometricManager,
     onNavigateUp: () -> Unit,
+    onSuccess: (VaultIdentifier) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(state) {
         if (state is BiometricsUiState.Success) {
-            onNavigateUp()
+            onSuccess(viewModel.identifier)
         }
     }
 
@@ -69,7 +69,7 @@ internal fun SetupScreen(
             closable = false,
         )
 
-        BiometricsUiState.Failed -> SetupScreen(
+        BiometricsUiState.Failed -> BiometricsSetupScreen(
             onNavigateUp = onNavigateUp,
             onSetup = {
                 viewModel.onSetup(
@@ -77,10 +77,10 @@ internal fun SetupScreen(
                     password = it
                 )
             },
-            failed = true,
+            failureReason = stringResource(R.string.invalid_credentials),
         )
 
-        BiometricsUiState.Setup -> SetupScreen(
+        BiometricsUiState.Setup -> BiometricsSetupScreen(
             onNavigateUp = onNavigateUp,
             onSetup = {
                 viewModel.onSetup(
@@ -88,12 +88,23 @@ internal fun SetupScreen(
                     password = it
                 )
             },
-            failed = false,
+            failureReason = null,
         )
 
         BiometricsUiState.Success -> LoadingScreen(
             onNavigateUp = onNavigateUp,
             closable = false,
+        )
+
+        BiometricsUiState.Canceled -> BiometricsSetupScreen(
+            onNavigateUp = onNavigateUp,
+            onSetup = {
+                viewModel.onSetup(
+                    biometricManager = biometricManager,
+                    password = it
+                )
+            },
+            failureReason = stringResource(R.string.cancelled),
         )
     }
 }
@@ -139,10 +150,10 @@ private fun LoadingScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SetupScreen(
+private fun BiometricsSetupScreen(
     onNavigateUp: () -> Unit,
     onSetup: (String) -> Unit,
-    failed: Boolean,
+    failureReason: String?,
 ) {
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -180,69 +191,61 @@ private fun SetupScreen(
                 .padding(16.dp)
                 .imePadding()
         ) {
-            Column(
-                modifier = Modifier.weight(1f),
+            Text(
+                text = stringResource(R.string.setup_biometrics_description),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Justify,
+            )
+            Row(
+                modifier = Modifier.weight(.5f),
+                verticalAlignment = Alignment.Bottom,
             ) {
-                Text(
-                    text = stringResource(R.string.setup_biometrics_description),
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Justify,
-                )
-                Row(
-                    modifier = Modifier.weight(1f),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column {
-                        Box(
-                            modifier = Modifier.height(32.dp)
-                        ) {
-                            if (failed) {
-                                Text(
-                                    text = stringResource(R.string.invalid_credentials),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.error,
-                                    textAlign = TextAlign.Justify,
-                                )
-                            }
-                        }
-                        TextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            isError = failed,
-                            singleLine = true,
-                            value = password,
-                            onValueChange = { password = it },
-                            label = {
-                                Text(stringResource(R.string.password))
-                            },
-                            keyboardActions = KeyboardActions(onDone = { onSetup(password) }),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                            visualTransformation = visualTransformation,
-                            trailingIcon = {
-                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                    Icon(
-                                        painter = painterResource(icon),
-                                        contentDescription = description
-                                    )
-                                }
-                            }
-                        )
-                    }
+                if (failureReason != null) {
+                    Text(
+                        text = failureReason,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Justify,
+                    )
                 }
             }
-
-            Column {
-                Button(
+            Row(
+                modifier = Modifier.weight(.5f),
+                verticalAlignment = Alignment.Top,
+            ) {
+                TextField(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { onSetup(password) },
-                ) {
-                    Text(stringResource(R.string.setup))
-                }
-                OutlinedButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = onNavigateUp
-                ) {
-                    Text(stringResource(R.string.cancel))
-                }
+                    isError = failureReason != null,
+                    singleLine = true,
+                    value = password,
+                    onValueChange = { password = it },
+                    label = {
+                        Text(stringResource(R.string.password))
+                    },
+                    keyboardActions = KeyboardActions(onDone = { onSetup(password) }),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    visualTransformation = visualTransformation,
+                    trailingIcon = {
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(
+                                painter = painterResource(icon),
+                                contentDescription = description
+                            )
+                        }
+                    }
+                )
+            }
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { onSetup(password) },
+            ) {
+                Text(stringResource(R.string.setup))
+            }
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onNavigateUp
+            ) {
+                Text(stringResource(R.string.cancel))
             }
         }
     }
@@ -268,10 +271,10 @@ private fun SetupScreenPreview(
 ) {
     ZebraTheme {
         Surface {
-            SetupScreen(
+            BiometricsSetupScreen(
                 onSetup = {},
                 onNavigateUp = {},
-                failed = failed,
+                failureReason = stringResource(R.string.invalid_credentials),
             )
         }
     }

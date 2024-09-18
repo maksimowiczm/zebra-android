@@ -12,6 +12,7 @@ import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
 import com.maksimowiczm.zebra.core.data.repository.SealedCredentialsRepository
 
 sealed interface AddVaultCredentialsError {
+    data object Canceled : AddVaultCredentialsError
     data object Unknown : AddVaultCredentialsError
 }
 
@@ -30,6 +31,7 @@ class AddVaultCredentialsUseCase(
         }.getOrElse {
             when (it) {
                 EncryptError.Unknown -> return Err(AddVaultCredentialsError.Unknown)
+                EncryptError.Canceled -> return Err(AddVaultCredentialsError.Canceled)
             }
         }
 

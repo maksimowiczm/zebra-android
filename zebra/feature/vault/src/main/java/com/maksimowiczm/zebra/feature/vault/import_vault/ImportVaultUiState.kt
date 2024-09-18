@@ -36,9 +36,7 @@ internal sealed interface ImportVaultUiState {
     /**
      * File was added.
      */
-    data object Done : ImportVaultUiState
-
-    data object IllegalFileName : ImportVaultUiState
+    data class Done(val vault: Vault) : ImportVaultUiState
 
     data object FileImportError : ImportVaultUiState
 

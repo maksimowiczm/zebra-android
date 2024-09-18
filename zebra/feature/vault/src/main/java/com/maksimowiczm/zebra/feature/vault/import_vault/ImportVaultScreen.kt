@@ -2,28 +2,24 @@ package com.maksimowiczm.zebra.feature.vault.import_vault
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -33,7 +29,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -41,18 +36,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.maksimowiczm.zebra.core.biometry.BiometricManager
+import com.maksimowiczm.zebra.core.biometry.BiometryStatus
+import com.maksimowiczm.zebra.core.common_ui.SomethingWentWrongScreen
+import com.maksimowiczm.zebra.core.common_ui.composable.BooleanParameterPreviewProvider
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
+import com.maksimowiczm.zebra.core.data.model.Vault
+import com.maksimowiczm.zebra.feature.vault.home.VaultListProvider
 import com.maksimowiczm.zebra.feature_vault.R
 
 @Composable
 internal fun ImportVaultScreen(
     viewModel: ImportVaultViewModel = hiltViewModel(),
     onNavigateUp: () -> Unit,
+    onVaultExists: (Vault) -> Unit,
+    biometricManager: BiometricManager,
+    onBiometricsSetup: (Vault) -> Unit,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
 
     var pickerLaunched by rememberSaveable { mutableStateOf(false) }
     val filePickerLauncher = rememberLauncherForActivityResult(
@@ -68,17 +73,22 @@ internal fun ImportVaultScreen(
         pickerLaunched = false
     }
 
-    LaunchedEffect(state) {
-        if (state is ImportVaultUiState.PickFile && !pickerLaunched) {
+    LaunchedEffect(uiState) {
+        if (uiState is ImportVaultUiState.PickFile && !pickerLaunched) {
             filePickerLauncher.launch(arrayOf("*/*"))
             pickerLaunched = true
         }
+        if (uiState is ImportVaultUiState.VaultExists) {
+            onVaultExists((uiState as ImportVaultUiState.VaultExists).vault)
+        }
     }
 
-    when (state) {
+    when (uiState) {
         ImportVaultUiState.PickFile,
         ImportVaultUiState.Idle,
-        ImportVaultUiState.Loading -> LoadingScreen(onNavigateUp = onNavigateUp)
+        ImportVaultUiState.Loading,
+        is ImportVaultUiState.VaultExists,
+        -> LoadingScreen(onNavigateUp = onNavigateUp)
 
         ImportVaultUiState.PickFileCanceled -> CancelScreen(
             onRetry = {
@@ -87,34 +97,37 @@ internal fun ImportVaultScreen(
             onNavigateUp = onNavigateUp
         )
 
-        is ImportVaultUiState.FileReady -> FileReadyScreen(
-            name = (state as ImportVaultUiState.FileReady).name,
+        is ImportVaultUiState.FileReady -> {
+            val state = uiState as ImportVaultUiState.FileReady
+            FileReadyScreen(
+                name = state.name,
+                onNavigateUp = onNavigateUp,
+                onNameChange = { viewModel.onNameChanged(it) },
+                onAdd = { viewModel.onImport() },
+            )
+        }
+
+        is ImportVaultUiState.Done -> DoneScreen(
             onNavigateUp = onNavigateUp,
-            onNameChange = { viewModel.onNameChanged(it) },
-            onAdd = {
-                viewModel.onImport()
-            }
+            hasBiometrics = biometricManager.hasBiometric() == BiometryStatus.Ok,
+            onBiometricsSetup = onBiometricsSetup,
+            vault = (uiState as ImportVaultUiState.Done).vault
         )
 
-        ImportVaultUiState.Done -> DoneScreen(onNavigateUp = onNavigateUp)
-        ImportVaultUiState.FileImportError -> TODO()
-        ImportVaultUiState.IllegalFileName -> TODO()
-        is ImportVaultUiState.VaultExists -> VaultExistsScreen(
-            name = (state as ImportVaultUiState.VaultExists).vault.name,
-            onNavigateUp = onNavigateUp,
-        )
+        ImportVaultUiState.FileImportError -> SomethingWentWrongScreen(onNavigateUp = onNavigateUp)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
-    onNavigateUp: () -> Unit
+    title: String,
+    onNavigateUp: () -> Unit,
 ) {
     TopAppBar(
         title = {
             Text(
-                text = stringResource(R.string.import_vault),
+                text = title,
                 style = MaterialTheme.typography.headlineLarge,
             )
         },
@@ -133,10 +146,13 @@ private fun TopBar(
 
 @Composable
 private fun LoadingScreen(
-    onNavigateUp: () -> Unit
+    onNavigateUp: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        TopBar(onNavigateUp = onNavigateUp)
+        TopBar(
+            title = stringResource(R.string.import_vault),
+            onNavigateUp = onNavigateUp
+        )
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -153,7 +169,10 @@ private fun CancelScreen(
     onNavigateUp: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        TopBar(onNavigateUp = onNavigateUp)
+        TopBar(
+            title = stringResource(R.string.import_vault),
+            onNavigateUp = onNavigateUp
+        )
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -213,6 +232,7 @@ private fun FileReadyScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         TopBar(
+            title = stringResource(R.string.import_vault),
             onNavigateUp = onNavigateUp
         )
         FileReadyContent(
@@ -220,60 +240,6 @@ private fun FileReadyScreen(
             onNameChange = onNameChange,
             onAdd = onAdd,
         )
-    }
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.End
-    ) {
-        FloatingActionButton(
-            modifier = Modifier.padding(16.dp),
-            onClick = onAdd,
-        ) {
-            Icon(
-                imageVector = Icons.Default.Done,
-                contentDescription = null
-            )
-        }
-    }
-}
-
-@Composable
-private fun DoneScreen(onNavigateUp: () -> Unit) {
-    var progress by rememberSaveable { mutableFloatStateOf(0f) }
-    val progressAnimation by animateFloatAsState(
-        targetValue = progress,
-        animationSpec = tween(
-            durationMillis = 5_000,
-            easing = LinearEasing,
-        ),
-        label = "progress",
-        finishedListener = { onNavigateUp() }
-    )
-    LaunchedEffect(Unit) { progress = 1f }
-
-    Column {
-        TopBar(
-            onNavigateUp = onNavigateUp
-        )
-        LinearProgressIndicator(
-            modifier = Modifier.fillMaxWidth(),
-            progress = { progressAnimation },
-            drawStopIndicator = {}
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable { onNavigateUp() },
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Icon(
-                imageVector = Icons.Default.Done,
-                contentDescription = null,
-                Modifier.size(100.dp)
-            )
-        }
     }
 }
 
@@ -286,46 +252,105 @@ private fun FileReadyContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp),
+            .padding(16.dp)
+            .imePadding(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        TextField(
+        Column(
+            modifier = Modifier.weight(.5f),
+            verticalArrangement = Arrangement.Top
+        ) {
+            Text(
+                text = stringResource(R.string.setup_vault),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
+        Column(
+            modifier = Modifier.weight(.5f),
+            verticalArrangement = Arrangement.Top
+        ) {
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = name,
+                onValueChange = onNameChange,
+                singleLine = true,
+                label = {
+                    Text(
+                        text = stringResource(R.string.name),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                },
+                keyboardActions = KeyboardActions(onDone = { onAdd() }),
+            )
+        }
+        Button(
             modifier = Modifier.fillMaxWidth(),
-            value = name,
-            onValueChange = onNameChange,
-            singleLine = true,
-            label = {
-                Text(
-                    text = stringResource(R.string.name),
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            },
-            keyboardActions = KeyboardActions(onDone = { onAdd() })
-        )
+            onClick = onAdd,
+        ) {
+            Text(
+                text = stringResource(R.string.import_),
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
     }
 }
 
 @Composable
-private fun VaultExistsScreen(
-    name: String,
-    onNavigateUp: () -> Unit
+private fun DoneScreen(
+    onNavigateUp: () -> Unit,
+    hasBiometrics: Boolean,
+    onBiometricsSetup: (Vault) -> Unit,
+    vault: Vault,
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopBar(onNavigateUp = onNavigateUp)
+    Column(
+        modifier = Modifier.padding(16.dp)
+    ) {
+        TopBar(
+            title = stringResource(R.string.vault_imported),
+            onNavigateUp = onNavigateUp
+        )
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = stringResource(R.string.vault_already_exists_with_the_name),
-                style = MaterialTheme.typography.titleMedium,
+            Icon(
+                imageVector = Icons.Default.Done,
+                contentDescription = null,
+                Modifier.size(100.dp)
             )
-            Text(
-                text = "\"$name\"",
-                style = MaterialTheme.typography.bodyLarge
-            )
+        }
+        if (hasBiometrics) {
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { onBiometricsSetup(vault) }
+            ) {
+                Text(
+                    text = stringResource(R.string.setup_biometrics),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onNavigateUp
+            ) {
+                Text(
+                    text = stringResource(R.string.skip),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+        } else {
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onNavigateUp
+            ) {
+                Text(
+                    text = stringResource(R.string.continue_),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
         }
     }
 }
@@ -373,24 +398,16 @@ private fun FileReadyScreenPreview() {
 
 @PreviewLightDark
 @Composable
-private fun DoneScreenPreview() {
+private fun DoneScreenPreview(
+    @PreviewParameter(BooleanParameterPreviewProvider::class) hasBiometrics: Boolean,
+) {
     ZebraTheme {
         Surface {
             DoneScreen(
-                onNavigateUp = {}
-            )
-        }
-    }
-}
-
-@PreviewLightDark
-@Composable
-private fun VaultExistsScreenPreview() {
-    ZebraTheme {
-        Surface {
-            VaultExistsScreen(
-                name = "Vault name",
-                onNavigateUp = {}
+                onNavigateUp = {},
+                hasBiometrics = hasBiometrics,
+                onBiometricsSetup = {},
+                vault = VaultListProvider().values.first { it.isNotEmpty() }.first()
             )
         }
     }

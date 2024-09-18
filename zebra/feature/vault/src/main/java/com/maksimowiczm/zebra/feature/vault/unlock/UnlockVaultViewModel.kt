@@ -36,50 +36,56 @@ internal class UnlockVaultViewModel @Inject constructor(
 ) : ViewModel() {
     private val identifier = savedStateHandle.toRoute<VaultScreen.UnlockVaultScreen>().identifier
 
-    private val _openingError = MutableStateFlow(false)
-    private val _biometricsInvalidated = MutableStateFlow(false)
+    private val _unrecoverableErrorFlow = MutableStateFlow(false)
 
-    private val hasCredentials = credentialsRepository
-        .observeCredentialsAvailable(vaultIdentifier = identifier)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = false
-        )
-
-    val state: StateFlow<VaultUiState> = combineN(
+    val state: StateFlow<UnlockUiState> = combineN(
         vaultRepository.observeVaultByIdentifier(identifier),
         unlockRepository.observeVaultStatus(identifier),
-        _openingError,
-        _biometricsInvalidated
-    ) { vault, unlockStatus, err, biometricsError ->
+        _unrecoverableErrorFlow,
+        credentialsRepository.observeCredentialsAvailable(vaultIdentifier = identifier),
+    ) { vault, unlockStatus, err, hasBiometrics ->
         if (vault == null || err) {
-            return@combineN VaultUiState.Error
+            return@combineN UnlockUiState.UnrecoverableError
         }
 
         return@combineN when (unlockStatus) {
-            VaultStatus.Locked -> VaultUiState.VaultFound(vault, biometricsError)
-            VaultStatus.Unlocking -> VaultUiState.Unlocking
-            is VaultStatus.Unlocked -> VaultUiState.Unlocked
-            is VaultStatus.Failed -> VaultUiState.PasswordFailed
-            VaultStatus.UnrecoverableError -> VaultUiState.Error
+            VaultStatus.Unlocking -> UnlockUiState.Unlocking(
+                biometricsStatus = vault.biometricsStatus
+            )
+
+            VaultStatus.Locked -> UnlockUiState.ReadyToUnlock(
+                vault = vault,
+                credentialsFailed = false,
+                biometricsStatus = vault.biometricsStatus,
+            )
+
+            is VaultStatus.Failed -> UnlockUiState.ReadyToUnlock(
+                vault = vault,
+                credentialsFailed = true,
+                biometricsStatus = vault.biometricsStatus,
+            )
+
+            is VaultStatus.Unlocked -> UnlockUiState.Unlocked
+
+            VaultStatus.UnrecoverableError -> UnlockUiState.UnrecoverableError
         }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
-        initialValue = VaultUiState.Loading
+        initialValue = UnlockUiState.Loading
     )
 
     fun onUnlock(password: String) {
         viewModelScope.launch {
             unlockRepository.unlock(
-                identifier, UnsealedVaultCredentials.Password(password)
+                identifier = identifier,
+                credentials = UnsealedVaultCredentials.Password(password)
             ).getOrElse {
                 when (it) {
                     UnlockError.FileError,
                     UnlockError.Unknown,
                     UnlockError.VaultNotFound,
-                    -> _openingError.emit(true)
+                    -> _unrecoverableErrorFlow.emit(true)
                 }
             }
         }
@@ -99,6 +105,7 @@ internal class UnlockVaultViewModel @Inject constructor(
                 credentialsRepository = credentialsRepository
             )
 
+            Log.d(TAG, "Attempting to get credentials")
             val credentials = getCredentials(identifier).getOrElse {
                 when (it) {
                     GetVaultCredentialsError.NotFound -> {
@@ -107,39 +114,29 @@ internal class UnlockVaultViewModel @Inject constructor(
 
                     is GetVaultCredentialsError.Unknown -> {
                         // most likely user cancelled the biometric prompt
+                        Log.d(TAG, "Vault credentials, unknown error", it.t)
                     }
 
                     GetVaultCredentialsError.PermanentlyInvalidated -> {
-                        _biometricsInvalidated.emit(true)
+                        Log.d(TAG, "Vault credentials permanently invalidated")
+                    }
+
+                    GetVaultCredentialsError.Canceled -> {
+                        Log.d(TAG, "Vault credentials canceled")
                     }
                 }
 
                 return@launch
             }
 
+            Log.d(TAG, "Attempting to unlock vault")
             unlockRepository.unlock(identifier, credentials)
         }
     }
 
-    /**
-     * Attempt to unlock the vault using biometrics.
-     * @return true if the vault can be unlocked, false otherwise.
-     */
-    fun onBiometrics(biometricManager: BiometricManager): Boolean {
-        if (hasCredentials.value && !_openingError.value) {
-            tryUnlock(biometricManager)
-            return true
-        }
-
-        return false
-    }
-
-    fun onBiometricsInvalidatedAcknowledge(acknowledged: Boolean) {
+    fun onBiometricsInvalidatedAcknowledge() {
         viewModelScope.launch {
-            _biometricsInvalidated.emit(false)
-            if (acknowledged) {
-                deleteVaultCredentialsUseCase(identifier)
-            }
+            deleteVaultCredentialsUseCase(identifier)
         }
     }
 

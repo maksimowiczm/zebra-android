@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 sealed interface ImportVaultResult {
     data object FileError : ImportVaultResult
-    data class VaultExists(val vault: Vault) : ImportVaultResult
+    data class VaultWithPathExists(val vault: Vault) : ImportVaultResult
 }
 
 class ImportUniqueVaultUseCase @Inject constructor(
@@ -23,7 +23,7 @@ class ImportUniqueVaultUseCase @Inject constructor(
         try {
             val existingVault = vaultRepository.getVaultByPath(path.toString())
             if (existingVault != null) {
-                return Err(ImportVaultResult.VaultExists(existingVault))
+                return Err(ImportVaultResult.VaultWithPathExists(existingVault))
             }
 
             if (fileRepository.persist(path).isErr) {
