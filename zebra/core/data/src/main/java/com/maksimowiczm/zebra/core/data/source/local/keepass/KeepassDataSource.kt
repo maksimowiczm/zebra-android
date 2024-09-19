@@ -165,6 +165,7 @@ private fun Entry.toVaultEntry(): VaultEntry {
     }
 
     return VaultEntry(
+        identifier = this.uuid.toString(),
         title = fields.title?.content ?: url ?: username ?: "<untitled>",
         username = username,
         password = if (fields.password == null) {
