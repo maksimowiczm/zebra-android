@@ -16,7 +16,7 @@ internal object KeepassModule {
     @Singleton
     fun provideKeepassDataSource(): KeepassDataSource {
         return KeepassDataSource(
-            ioDispatcher = Dispatchers.IO
+            defaultDispatcher = Dispatchers.Default
         )
     }
 }

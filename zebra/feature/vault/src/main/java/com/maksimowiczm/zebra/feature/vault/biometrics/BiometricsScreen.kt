@@ -70,7 +70,6 @@ internal fun BiometricsSetupScreen(
         )
 
         BiometricsUiState.Failed -> BiometricsSetupScreen(
-            onNavigateUp = onNavigateUp,
             onSetup = {
                 viewModel.onSetup(
                     biometricManager = biometricManager,
@@ -78,10 +77,13 @@ internal fun BiometricsSetupScreen(
                 )
             },
             failureReason = stringResource(R.string.invalid_credentials),
+            onCancel = {
+                viewModel.onCancel()
+                onNavigateUp()
+            }
         )
 
         BiometricsUiState.Setup -> BiometricsSetupScreen(
-            onNavigateUp = onNavigateUp,
             onSetup = {
                 viewModel.onSetup(
                     biometricManager = biometricManager,
@@ -89,6 +91,10 @@ internal fun BiometricsSetupScreen(
                 )
             },
             failureReason = null,
+            onCancel = {
+                viewModel.onCancel()
+                onNavigateUp()
+            }
         )
 
         BiometricsUiState.Success -> LoadingScreen(
@@ -97,7 +103,6 @@ internal fun BiometricsSetupScreen(
         )
 
         BiometricsUiState.Canceled -> BiometricsSetupScreen(
-            onNavigateUp = onNavigateUp,
             onSetup = {
                 viewModel.onSetup(
                     biometricManager = biometricManager,
@@ -105,6 +110,10 @@ internal fun BiometricsSetupScreen(
                 )
             },
             failureReason = stringResource(R.string.cancelled),
+            onCancel = {
+                viewModel.onCancel()
+                onNavigateUp()
+            }
         )
     }
 }
@@ -151,8 +160,8 @@ private fun LoadingScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BiometricsSetupScreen(
-    onNavigateUp: () -> Unit,
     onSetup: (String) -> Unit,
+    onCancel: () -> Unit,
     failureReason: String?,
 ) {
     var password by rememberSaveable { mutableStateOf("") }
@@ -243,7 +252,7 @@ private fun BiometricsSetupScreen(
             }
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onNavigateUp
+                onClick = onCancel,
             ) {
                 Text(stringResource(R.string.cancel))
             }
@@ -273,7 +282,7 @@ private fun SetupScreenPreview(
         Surface {
             BiometricsSetupScreen(
                 onSetup = {},
-                onNavigateUp = {},
+                onCancel = {},
                 failureReason = stringResource(R.string.invalid_credentials),
             )
         }

@@ -8,8 +8,6 @@ import com.maksimowiczm.zebra.core.data.model.UnsealedVaultCredentials
 import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
 import com.maksimowiczm.zebra.core.data.model.VaultStatus
 import com.maksimowiczm.zebra.core.data.source.local.keepass.KeepassDataSource
-import com.maksimowiczm.zebra.core.data.source.local.keepass.UnlockError.*
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -43,23 +41,12 @@ class UnlockRepository @Inject constructor(
             return Err(UnlockError.FileError)
         }
 
-        try {
-            when (credentials) {
-                is UnsealedVaultCredentials.Password -> keepassDataSource.unlock(
-                    identifier,
-                    stream,
-                    credentials.password
-                )
-            }.getOrElse {
-                return when (it) {
-                    Unknown -> Err(UnlockError.Unknown)
-                    FormatError -> Err(UnlockError.FileError)
-                    InvalidKey, AlreadyUnlocked -> Ok(Unit)
-                }
-            }
-        } catch (e: CancellationException) {
-            keepassDataSource.lock(identifier)
-            throw e
+        when (credentials) {
+            is UnsealedVaultCredentials.Password -> keepassDataSource.unlock(
+                identifier,
+                stream,
+                credentials.password
+            )
         }
 
         return Ok(Unit)

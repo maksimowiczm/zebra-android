@@ -42,8 +42,7 @@ internal class UnlockVaultViewModel @Inject constructor(
         vaultRepository.observeVaultByIdentifier(identifier),
         unlockRepository.observeVaultStatus(identifier),
         _unrecoverableErrorFlow,
-        credentialsRepository.observeCredentialsAvailable(vaultIdentifier = identifier),
-    ) { vault, unlockStatus, err, hasBiometrics ->
+    ) { vault, unlockStatus, err ->
         if (vault == null || err) {
             return@combineN UnlockUiState.UnrecoverableError
         }
@@ -59,7 +58,7 @@ internal class UnlockVaultViewModel @Inject constructor(
                 biometricsStatus = vault.biometricsStatus,
             )
 
-            is VaultStatus.Failed -> UnlockUiState.ReadyToUnlock(
+            is VaultStatus.CredentialsFailed -> UnlockUiState.ReadyToUnlock(
                 vault = vault,
                 credentialsFailed = true,
                 biometricsStatus = vault.biometricsStatus,

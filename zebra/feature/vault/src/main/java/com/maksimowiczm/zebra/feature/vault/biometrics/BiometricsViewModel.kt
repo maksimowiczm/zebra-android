@@ -56,10 +56,16 @@ class BiometricsViewModel @Inject constructor(
                     _state.emit(BiometricsUiState.Success)
                 }
 
-                if (status is VaultStatus.Failed) {
+                if (status is VaultStatus.CredentialsFailed) {
                     _state.emit(BiometricsUiState.Failed)
                 }
             }
+        }
+    }
+
+    fun onCancel() {
+        viewModelScope.launch {
+            unlockRepository.lock(identifier)
         }
     }
 }

@@ -42,7 +42,7 @@ internal class OpenedVaultViewModel @Inject constructor(
             VaultStatus.Locked -> OpenVaultUiState.Closed
             VaultStatus.Unlocking -> OpenVaultUiState.Loading
 
-            is VaultStatus.Failed,
+            is VaultStatus.CredentialsFailed,
             VaultStatus.UnrecoverableError,
             -> OpenVaultUiState.Lost
 

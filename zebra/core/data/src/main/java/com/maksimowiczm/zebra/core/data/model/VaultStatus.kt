@@ -7,7 +7,7 @@ sealed interface VaultStatus {
         val entries: List<VaultEntry>,
     ) : VaultStatus
 
-    data class Failed(val count: Int) : VaultStatus
+    data class CredentialsFailed(val count: Int) : VaultStatus
 
     data object UnrecoverableError : VaultStatus
 }
