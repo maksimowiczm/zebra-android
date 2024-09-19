@@ -46,4 +46,5 @@
     <string name="seems_like_you_enrolled_new_biometrics">Seems like you enrolled new biometrics.</string>
     <string name="ok">OK</string>
     <string name="cancelled">Cancelled</string>
+    <string name="locked">Locked</string>
 </resources>

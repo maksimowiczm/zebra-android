@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.maksimowiczm.zebra.core.common_ui.SomethingWentWrongScreen
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
 import com.maksimowiczm.zebra.core.data.model.Vault
 import com.maksimowiczm.zebra.core.data.model.VaultEntry
@@ -46,32 +47,33 @@ internal fun OpenedVaultScreen(
     onClose: () -> Unit,
     viewModel: OpenedVaultViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     BackHandler {
         onNavigateUp()
     }
 
-    LaunchedEffect(state) {
-        if (state is OpenVaultUiState.Closed) {
-            Toast.makeText(context, "Closed", Toast.LENGTH_SHORT).show()
+    LaunchedEffect(uiState) {
+        if (uiState is OpenVaultUiState.Closed) {
+            Toast.makeText(context, context.getString(R.string.locked), Toast.LENGTH_SHORT).show()
             onClose()
         }
 
-        if (state is OpenVaultUiState.Lost) {
+        if (uiState is OpenVaultUiState.Lost) {
             onNavigateUp()
         }
     }
 
-    when (state) {
+    when (uiState) {
         OpenVaultUiState.Loading,
-        OpenVaultUiState.Lost,
         OpenVaultUiState.Closed,
         -> LoadingScreen()
 
+        OpenVaultUiState.Lost -> SomethingWentWrongScreen(onNavigateUp)
+
         is OpenVaultUiState.Unlocked -> {
-            val state = state as OpenVaultUiState.Unlocked
+            val state = uiState as OpenVaultUiState.Unlocked
 
             OpenedVaultScreen(
                 vault = state.vault,
