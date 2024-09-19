@@ -40,36 +40,32 @@ internal class WebRtcPeerChannelBuilder(
         PeerConnectionFactory.builder().createPeerConnectionFactory()
     }
 
-    suspend fun build(
+    fun build(
         session: String,
         listener: PeerChannel.Listener,
     ): PeerChannel? {
-        return withContext(ioDispatcher) {
-            async {
-                val signalingChannel = socketFactory.create(token = session)
+        val signalingChannel = socketFactory.create(token = session)
 
-                val builder = DataChannelBuilder(
-                    signalingChannel = signalingChannel,
-                    listener = listener,
-                    ioDispatcher = ioDispatcher,
-                )
+        val builder = DataChannelBuilder(
+            signalingChannel = signalingChannel,
+            listener = listener,
+            ioDispatcher = ioDispatcher,
+        )
 
-                Log.d(TAG, "Creating peer connection")
-                val connection = factory.createPeerConnection(defaultRtcConfig, builder)
-                    ?: return@async null
+        Log.d(TAG, "Creating peer connection")
+        val connection = factory.createPeerConnection(defaultRtcConfig, builder)
+            ?: return null
 
-                val dataChannelInit = DataChannel.Init().apply {
-                    ordered = true
-                }
-
-                val channel = builder.offer(
-                    connection = connection,
-                    dataChannel = connection.createDataChannel(DATA_CHANNEL_NAME, dataChannelInit)
-                )
-
-                return@async channel
-            }.await()
+        val dataChannelInit = DataChannel.Init().apply {
+            ordered = true
         }
+
+        val channel = builder.offer(
+            connection = connection,
+            dataChannel = connection.createDataChannel(DATA_CHANNEL_NAME, dataChannelInit)
+        )
+
+        return channel
     }
 
     companion object {

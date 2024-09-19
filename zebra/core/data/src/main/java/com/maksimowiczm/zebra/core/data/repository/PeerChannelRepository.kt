@@ -26,10 +26,10 @@ class PeerChannelRepository @Inject constructor(
     fun observePeerChannel(sessionIdentifier: String): Flow<PeerChannel?> {
         return webRtcDataSource.observePeerChannelStatus(sessionIdentifier).map {
             when (it) {
-                Status.CONNECTING -> PeerChannel.Connecting(sessionIdentifier)
-                Status.CONNECTED -> PeerChannel.Connected(sessionIdentifier)
-                Status.CLOSED -> PeerChannel.Closed(sessionIdentifier)
-                Status.FAILED -> PeerChannel.Failed(sessionIdentifier)
+                Status.CONNECTING -> PeerChannel.Connecting
+                Status.CONNECTED -> PeerChannel.Connected
+                Status.CLOSED -> PeerChannel.Closed
+                Status.FAILED -> PeerChannel.Failed
                 Status.UNKNOWN -> null
             }
         }

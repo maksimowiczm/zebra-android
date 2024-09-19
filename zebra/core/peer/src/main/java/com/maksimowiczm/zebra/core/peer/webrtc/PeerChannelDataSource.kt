@@ -9,6 +9,7 @@ import com.github.michaelbull.result.Result
 import com.maksimowiczm.zebra.core.peer.socket.SocketFactory
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -112,7 +113,7 @@ class WebRtcDataSource(
         if (status != null) {
             status.emit(PeerChannel.Status.CONNECTING)
         } else {
-            peerStatus[sessionIdentifier] = MutableStateFlow(PeerChannel.Status.UNKNOWN)
+            peerStatus[sessionIdentifier] = MutableStateFlow(PeerChannel.Status.CONNECTING)
         }
 
         val builder = WebRtcPeerChannelBuilder(
@@ -156,7 +157,11 @@ class WebRtcDataSource(
         }
 
         override fun onOpen(channel: PeerChannel) {
-            peerStatus[identifier]?.update { PeerChannel.Status.CONNECTED }
+            mainScope.launch {
+                // Some breathing space for channels
+                delay(200)
+                peerStatus[identifier]?.update { PeerChannel.Status.CONNECTED }
+            }
         }
 
         override fun onClosed(channel: PeerChannel) {
