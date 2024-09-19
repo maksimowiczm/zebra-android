@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.maksimowiczm.zebra.core.biometry.BiometricManager
+import com.maksimowiczm.zebra.core.data.model.VaultEntryIdentifier
 import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
 import com.maksimowiczm.zebra.feature.vault.biometrics.BiometricsSetupScreen
 import com.maksimowiczm.zebra.feature.vault.import_vault.ImportVaultScreen
@@ -37,6 +38,7 @@ internal sealed interface VaultScreen {
 fun NavGraphBuilder.vaultGraph(
     navController: NavController,
     biometricManager: BiometricManager,
+    onNavigateSend: (VaultIdentifier, VaultEntryIdentifier) -> Unit,
 ) {
     navigation<VaultRoute>(
         startDestination = VaultScreen.VaultHomeScreen
@@ -85,8 +87,14 @@ fun NavGraphBuilder.vaultGraph(
         }
         composable<VaultScreen.OpenedVaultScreen> {
             OpenedVaultScreen(
-                onNavigateUp = navigateToHome,
+                onNavigateUp = {
+                    navController.popBackStack(
+                        route = VaultScreen.VaultHomeScreen,
+                        inclusive = false,
+                    )
+                },
                 onClose = navigateToHome,
+                onShare = onNavigateSend,
             )
         }
         composable<VaultScreen.BiometricsScreen> {

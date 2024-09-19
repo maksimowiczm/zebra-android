@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
 import com.maksimowiczm.zebra.core.data.model.VaultEntry
+import com.maksimowiczm.zebra.core.data.model.VaultEntryIdentifier
 import com.maksimowiczm.zebra.feature_vault.R
 
 
@@ -39,6 +40,7 @@ internal fun VaultEntryListItem(
     entry: VaultEntry,
     onCopy: (String, Boolean) -> Unit,
     initialOpened: Boolean = false,
+    onShare: (VaultEntryIdentifier) -> Unit,
 ) {
     var opened by rememberSaveable { mutableStateOf(initialOpened) }
     val modifier = if (opened) {
@@ -55,6 +57,7 @@ internal fun VaultEntryListItem(
             title = entry.title,
             opened = opened,
             onOpen = { opened = !opened },
+            onShare = { onShare(entry.identifier) }
         )
         if (opened) {
             Spacer(
@@ -73,6 +76,7 @@ private fun EntryHeader(
     title: String,
     opened: Boolean,
     onOpen: () -> Unit,
+    onShare: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -87,6 +91,12 @@ private fun EntryHeader(
             text = title
         )
         Spacer(modifier = Modifier.weight(1f))
+        IconButton(onClick = onShare) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_qr_code_scanner),
+                contentDescription = null,
+            )
+        }
         if (!opened) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -233,7 +243,8 @@ private fun ExpandedVaultEntryListItemPreview(
             VaultEntryListItem(
                 entry = entry,
                 initialOpened = true,
-                onCopy = { _, _ -> }
+                onCopy = { _, _ -> },
+                onShare = {},
             )
         }
     }
@@ -247,7 +258,8 @@ private fun VaultEntryListItemPreview() {
             VaultEntryListItem(
                 entry = VaultEntryProvider().values.first(),
                 initialOpened = false,
-                onCopy = { _, _ -> }
+                onCopy = { _, _ -> },
+                onShare = {},
             )
         }
     }

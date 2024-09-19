@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="request_camera_permission">Request camera permission</string>
+    <string name="send">Send</string>
+    <string name="session">Session</string>
+    <string name="close">Close</string>
+</resources>

@@ -22,6 +22,7 @@
             <option value="$PROJECT_DIR$/zebra/core/domain" />
             <option value="$PROJECT_DIR$/zebra/core/peer" />
             <option value="$PROJECT_DIR$/zebra/feature" />
+            <option value="$PROJECT_DIR$/zebra/feature/send" />
             <option value="$PROJECT_DIR$/zebra/feature/vault" />
           </set>
         </option>

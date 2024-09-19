@@ -47,7 +47,7 @@ class VaultEntryListProvider : PreviewParameterProvider<List<VaultEntry>> {
 }
 
 private fun entry(
-    identifier: VaultEntryIdentifier = UUID.randomUUID(),
+    identifier: VaultEntryIdentifier = UUID.randomUUID().toString(),
     title: String = "<untitled>",
     username: String? = null,
     password: String? = null,

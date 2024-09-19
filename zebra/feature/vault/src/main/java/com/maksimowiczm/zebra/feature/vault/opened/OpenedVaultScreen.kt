@@ -39,12 +39,15 @@ import com.maksimowiczm.zebra.core.common_ui.SomethingWentWrongScreen
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
 import com.maksimowiczm.zebra.core.data.model.Vault
 import com.maksimowiczm.zebra.core.data.model.VaultEntry
+import com.maksimowiczm.zebra.core.data.model.VaultEntryIdentifier
+import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
 import com.maksimowiczm.zebra.feature_vault.R
 
 @Composable
 internal fun OpenedVaultScreen(
     onNavigateUp: () -> Unit,
     onClose: () -> Unit,
+    onShare: (VaultIdentifier, VaultEntryIdentifier) -> Unit,
     viewModel: OpenedVaultViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
@@ -80,7 +83,8 @@ internal fun OpenedVaultScreen(
                 onNavigateUp = onNavigateUp,
                 entries = state.entries,
                 onLock = { viewModel.onLock() },
-                onCopy = { text, hide -> viewModel.onCopy(text, hide) }
+                onCopy = { text, hide -> viewModel.onCopy(text, hide) },
+                onShare = { onShare(state.vault.identifier, it) },
             )
         }
     }
@@ -92,6 +96,7 @@ private fun OpenedVaultScreen(
     onNavigateUp: () -> Unit,
     onLock: () -> Unit,
     onCopy: (String, Boolean) -> Unit,
+    onShare: (VaultEntryIdentifier) -> Unit,
     vault: Vault,
     entries: List<VaultEntry>,
 ) {
@@ -138,7 +143,11 @@ private fun OpenedVaultScreen(
         ) {
             LazyColumn {
                 items(entries) {
-                    VaultEntryListItem(it, onCopy = onCopy)
+                    VaultEntryListItem(
+                        entry = it,
+                        onCopy = onCopy,
+                        onShare = onShare,
+                    )
                     HorizontalDivider()
                 }
             }
@@ -174,7 +183,8 @@ private fun OpenedVaultScreenPreview(
                     name = "My vault",
                     path = "".toUri()
                 ),
-                entries = entries
+                entries = entries,
+                onShare = {}
             )
         }
     }

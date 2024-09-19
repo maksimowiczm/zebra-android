@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.maksimowiczm.feature.send.SendScreen
+import com.maksimowiczm.feature.send.sendGraph
 import com.maksimowiczm.zebra.core.biometry.BiometricManager
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
 import com.maksimowiczm.zebra.feature.vault.VaultRoute
@@ -39,7 +41,7 @@ fun ZebraApp(
                         Text(text = "DEBUGGABLE")
                     }
                 }
-                
+
                 val navController = rememberNavController()
 
                 NavHost(
@@ -48,8 +50,17 @@ fun ZebraApp(
                 ) {
                     vaultGraph(
                         navController = navController,
-                        biometricManager = biometricManager
+                        biometricManager = biometricManager,
+                        onNavigateSend = { vaultIdentifier, entryIdentifier ->
+                            navController.navigate(
+                                SendScreen.SendEntryScreen(
+                                    vaultIdentifier,
+                                    entryIdentifier
+                                )
+                            )
+                        }
                     )
+                    sendGraph(navController = navController)
                 }
             }
         }

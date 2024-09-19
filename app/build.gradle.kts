@@ -59,6 +59,7 @@ dependencies {
     implementation(project(":zebra:core:common-ui"))
     implementation(project(":zebra:feature:vault"))
     implementation(project(":zebra:core:data"))
+    implementation(project(":zebra:feature:send"))
 
     // Hilt
     ksp(libs.hilt.android.compiler)
