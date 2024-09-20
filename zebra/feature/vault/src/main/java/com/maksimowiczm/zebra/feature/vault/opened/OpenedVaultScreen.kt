@@ -41,6 +41,7 @@ import com.maksimowiczm.zebra.core.data.model.Vault
 import com.maksimowiczm.zebra.core.data.model.VaultEntry
 import com.maksimowiczm.zebra.core.data.model.VaultEntryIdentifier
 import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
+import com.maksimowiczm.zebra.core.network.NetworkStatus
 import com.maksimowiczm.zebra.feature_vault.R
 
 @Composable
@@ -84,7 +85,11 @@ internal fun OpenedVaultScreen(
                 entries = state.entries,
                 onLock = { viewModel.onLock() },
                 onCopy = { text, hide -> viewModel.onCopy(text, hide) },
-                onShare = { onShare(state.vault.identifier, it) },
+                onShare = if (state.networkStatus == NetworkStatus.Online) {
+                    { onShare(state.vault.identifier, it) }
+                } else {
+                    null
+                }
             )
         }
     }
@@ -96,7 +101,7 @@ private fun OpenedVaultScreen(
     onNavigateUp: () -> Unit,
     onLock: () -> Unit,
     onCopy: (String, Boolean) -> Unit,
-    onShare: (VaultEntryIdentifier) -> Unit,
+    onShare: ((VaultEntryIdentifier) -> Unit)?,
     vault: Vault,
     entries: List<VaultEntry>,
 ) {

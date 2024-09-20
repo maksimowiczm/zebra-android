@@ -40,7 +40,7 @@ internal fun VaultEntryListItem(
     entry: VaultEntry,
     onCopy: (String, Boolean) -> Unit,
     initialOpened: Boolean = false,
-    onShare: (VaultEntryIdentifier) -> Unit,
+    onShare: ((VaultEntryIdentifier) -> Unit)?,
 ) {
     var opened by rememberSaveable { mutableStateOf(initialOpened) }
     val modifier = if (opened) {
@@ -57,7 +57,11 @@ internal fun VaultEntryListItem(
             title = entry.title,
             opened = opened,
             onOpen = { opened = !opened },
-            onShare = { onShare(entry.identifier) }
+            onShare = if (onShare != null) {
+                { onShare(entry.identifier) }
+            } else {
+                null
+            }
         )
         if (opened) {
             Spacer(
@@ -76,7 +80,7 @@ private fun EntryHeader(
     title: String,
     opened: Boolean,
     onOpen: () -> Unit,
-    onShare: () -> Unit,
+    onShare: (() -> Unit)?,
 ) {
     Row(
         modifier = Modifier
@@ -91,7 +95,10 @@ private fun EntryHeader(
             text = title
         )
         Spacer(modifier = Modifier.weight(1f))
-        IconButton(onClick = onShare) {
+        IconButton(
+            onClick = { onShare?.invoke() },
+            enabled = onShare != null,
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_qr_code_scanner),
                 contentDescription = null,
