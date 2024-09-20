@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
+import com.maksimowiczm.feature.send.connection.ConnectionScreen
 import com.maksimowiczm.feature.send.scanner.QrScannerScreen
 import com.maksimowiczm.zebra.core.data.model.VaultEntryIdentifier
 import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
@@ -27,6 +28,7 @@ sealed interface SendScreen {
     data class ConnectionScreen(
         val vaultIdentifier: VaultIdentifier,
         val entryIdentifier: VaultEntryIdentifier,
+        val session: String,
     ) : SendScreen
 }
 
@@ -40,16 +42,22 @@ fun NavGraphBuilder.sendGraph(navController: NavController) {
 
             QrScannerScreen(
                 onNavigateUp = { navController.popBackStack() },
-                onCode = {
+                onCode = { code ->
                     navController.navigate(
                         SendScreen.ConnectionScreen(
                             vaultIdentifier = route.vaultIdentifier,
-                            entryIdentifier = route.entryIdentifier
+                            entryIdentifier = route.entryIdentifier,
+                            session = code,
                         )
                     )
                 }
             )
         }
-        composable<SendScreen.ConnectionScreen> {}
+        composable<SendScreen.ConnectionScreen> {
+            ConnectionScreen(
+                onSuccessBack = { navController.popBackStack(route = SendRoute, inclusive = true) },
+                onFailureBack = { navController.popBackStack() }
+            )
+        }
     }
 }

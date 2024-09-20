@@ -32,6 +32,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +54,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.maksimowiczm.feature.send.R
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun QrScannerScreen(
@@ -70,11 +72,23 @@ internal fun QrScannerScreen(
         )
     }
 
+    var calledOnCode by rememberSaveable { mutableStateOf(false) }
+    // Create some breathing space between code scans
+    LaunchedEffect(calledOnCode) {
+        delay(1_000)
+        calledOnCode = false
+    }
+
     QrScannerScreen(
         hasPermissions = hasCameraPermission,
         onPermissionGranted = { hasCameraPermission = true },
         onClose = onNavigateUp,
-        onCode = onCode,
+        onCode = {
+            if (!calledOnCode) {
+                calledOnCode = true
+                onCode(it)
+            }
+        },
     )
 }
 
