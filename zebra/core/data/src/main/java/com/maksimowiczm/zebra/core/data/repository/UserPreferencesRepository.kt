@@ -18,4 +18,8 @@ class UserPreferencesRepository @Inject constructor(
     suspend fun setBiometricIdentifier(identifier: ByteArray) {
         return userPreferencesDataSource.updateBiometricIdentifier(identifier)
     }
+
+    suspend fun getPersistentIdentifier(): ByteArray {
+        return userPreferencesDataSource.getPersistentIdentifier()
+    }
 }
