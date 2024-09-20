@@ -4,6 +4,8 @@ import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.getOrElse
 import com.github.michaelbull.result.mapError
 import com.maksimowiczm.zebra.core.data.model.PeerChannel
+import com.maksimowiczm.zebra.core.data.model.VaultEntry
+import com.maksimowiczm.zebra.core.data.model.toProto
 import com.maksimowiczm.zebra.core.peer.api.PeerChannel.Status
 import com.maksimowiczm.zebra.core.peer.webrtc.CreateError.*
 import com.maksimowiczm.zebra.core.peer.webrtc.WebRtcDataSource
@@ -50,6 +52,10 @@ class PeerChannelRepository @Inject constructor(
                 Unknown -> CreateError.Unknown
             }
         }
+    }
+
+    fun sendEntry(sessionIdentifier: String, entry: VaultEntry): Boolean {
+        return webRtcDataSource.sendMessage(sessionIdentifier, entry.toProto().toByteArray()).isOk
     }
 
     /**

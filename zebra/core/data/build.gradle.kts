@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.google.protobuf)
 }
 
 android {
@@ -51,10 +52,28 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
 
+    // Protobuf
+    implementation(libs.protobuf.javalite)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${libs.versions.protobufJavalite.get()}"
+    }
+    generateProtoTasks {
+        all().forEach {
+            it.builtins {
+                create("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
 }
