@@ -34,13 +34,18 @@ import com.maksimowiczm.zebra.core.data.model.VaultEntry
 import com.maksimowiczm.zebra.core.data.model.VaultEntryIdentifier
 import com.maksimowiczm.zebra.feature_vault.R
 
+internal sealed interface ShareHandler {
+    data object Disabled : ShareHandler
+    data object NotAvailable : ShareHandler
+    data class Enabled(val onShare: (VaultEntryIdentifier) -> Unit) : ShareHandler
+}
 
 @Composable
 internal fun VaultEntryListItem(
     entry: VaultEntry,
     onCopy: (String, Boolean) -> Unit,
     initialOpened: Boolean = false,
-    onShare: ((VaultEntryIdentifier) -> Unit)?,
+    shareHandler: ShareHandler,
 ) {
     var opened by rememberSaveable { mutableStateOf(initialOpened) }
     val modifier = if (opened) {
@@ -54,14 +59,11 @@ internal fun VaultEntryListItem(
         modifier = modifier
     ) {
         EntryHeader(
+            identifier = entry.identifier,
             title = entry.title,
             opened = opened,
             onOpen = { opened = !opened },
-            onShare = if (onShare != null) {
-                { onShare(entry.identifier) }
-            } else {
-                null
-            }
+            shareHandler = shareHandler,
         )
         if (opened) {
             Spacer(
@@ -77,10 +79,11 @@ internal fun VaultEntryListItem(
 
 @Composable
 private fun EntryHeader(
+    identifier: VaultEntryIdentifier,
     title: String,
     opened: Boolean,
     onOpen: () -> Unit,
-    onShare: (() -> Unit)?,
+    shareHandler: ShareHandler,
 ) {
     Row(
         modifier = Modifier
@@ -95,14 +98,30 @@ private fun EntryHeader(
             text = title
         )
         Spacer(modifier = Modifier.weight(1f))
-        IconButton(
-            onClick = { onShare?.invoke() },
-            enabled = onShare != null,
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_qr_code_scanner),
-                contentDescription = null,
-            )
+        when (shareHandler) {
+            ShareHandler.Disabled -> {}
+            is ShareHandler.Enabled -> {
+                IconButton(
+                    onClick = { shareHandler.onShare(identifier) },
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_qr_code_scanner),
+                        contentDescription = null,
+                    )
+                }
+            }
+
+            ShareHandler.NotAvailable -> {
+                IconButton(
+                    onClick = {},
+                    enabled = false,
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_qr_code_scanner),
+                        contentDescription = null,
+                    )
+                }
+            }
         }
         if (!opened) {
             Icon(
@@ -251,7 +270,7 @@ private fun ExpandedVaultEntryListItemPreview(
                 entry = entry,
                 initialOpened = true,
                 onCopy = { _, _ -> },
-                onShare = {},
+                shareHandler = ShareHandler.Enabled {}
             )
         }
     }
@@ -266,7 +285,7 @@ private fun VaultEntryListItemPreview() {
                 entry = VaultEntryProvider().values.first(),
                 initialOpened = false,
                 onCopy = { _, _ -> },
-                onShare = {},
+                shareHandler = ShareHandler.Enabled { }
             )
         }
     }

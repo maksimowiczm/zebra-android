@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.maksimowiczm.zebra.core.clipboard.ClipboardManager
 import com.maksimowiczm.zebra.core.common.combineN
+import com.maksimowiczm.zebra.core.data.model.FeatureFlag
 import com.maksimowiczm.zebra.core.data.model.VaultStatus
+import com.maksimowiczm.zebra.core.data.repository.FeatureFlagRepository
 import com.maksimowiczm.zebra.core.data.repository.UnlockRepository
 import com.maksimowiczm.zebra.core.data.repository.VaultRepository
 import com.maksimowiczm.zebra.core.network.NetworkMonitor
@@ -25,8 +27,15 @@ internal class OpenedVaultViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val clipboardManager: ClipboardManager,
     networkMonitor: NetworkMonitor,
+    featureFlagRepository: FeatureFlagRepository,
 ) : ViewModel() {
     private val identifier = savedStateHandle.toRoute<VaultScreen.OpenedVaultScreen>().identifier
+
+    val featureSend = featureFlagRepository.observeFeatureFlag(FeatureFlag.FEATURE_SEND).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = false
+    )
 
     val state: StateFlow<OpenVaultUiState> =
         combineN(

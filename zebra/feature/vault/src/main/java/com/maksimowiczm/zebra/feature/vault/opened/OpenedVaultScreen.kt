@@ -52,6 +52,7 @@ internal fun OpenedVaultScreen(
     viewModel: OpenedVaultViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
+    val featureSend by viewModel.featureSend.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     BackHandler {
@@ -79,17 +80,25 @@ internal fun OpenedVaultScreen(
         is OpenVaultUiState.Unlocked -> {
             val state = uiState as OpenVaultUiState.Unlocked
 
+            val shareHandler = if (featureSend) {
+                if (state.networkStatus == NetworkStatus.Online) {
+                    ShareHandler.Enabled { entryIdentifier ->
+                        onShare(state.vault.identifier, entryIdentifier)
+                    }
+                } else {
+                    ShareHandler.NotAvailable
+                }
+            } else {
+                ShareHandler.Disabled
+            }
+
             OpenedVaultScreen(
                 vault = state.vault,
                 onNavigateUp = onNavigateUp,
                 entries = state.entries,
                 onLock = { viewModel.onLock() },
                 onCopy = { text, hide -> viewModel.onCopy(text, hide) },
-                onShare = if (state.networkStatus == NetworkStatus.Online) {
-                    { onShare(state.vault.identifier, it) }
-                } else {
-                    null
-                }
+                shareHandler = shareHandler
             )
         }
     }
@@ -101,7 +110,7 @@ private fun OpenedVaultScreen(
     onNavigateUp: () -> Unit,
     onLock: () -> Unit,
     onCopy: (String, Boolean) -> Unit,
-    onShare: ((VaultEntryIdentifier) -> Unit)?,
+    shareHandler: ShareHandler,
     vault: Vault,
     entries: List<VaultEntry>,
 ) {
@@ -151,7 +160,7 @@ private fun OpenedVaultScreen(
                     VaultEntryListItem(
                         entry = it,
                         onCopy = onCopy,
-                        onShare = onShare,
+                        shareHandler = shareHandler,
                     )
                     HorizontalDivider()
                 }
@@ -189,7 +198,7 @@ private fun OpenedVaultScreenPreview(
                     path = "".toUri()
                 ),
                 entries = entries,
-                onShare = {}
+                shareHandler = ShareHandler.Disabled
             )
         }
     }

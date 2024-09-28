@@ -38,6 +38,26 @@ class UserPreferencesDataSource(
         }
     }
 
+    fun observeFeatureFlag(name: String, default: Boolean): Flow<Boolean> {
+        return userPreferencesStore.data.map { preferences ->
+            preferences.featureFlagsMap[name] ?: default
+        }
+    }
+
+    suspend fun updateFeatureFlag(name: String, isEnabled: Boolean) {
+        runCatching {
+            userPreferencesStore.updateData { currentPreferences ->
+                currentPreferences
+                    .toBuilder()
+                    .putFeatureFlags(name, isEnabled)
+                    .build()
+            }
+        }.getOrElse {
+            Log.e(TAG, "Error updating feature flag.", it)
+            throw it
+        }
+    }
+
     companion object {
         private const val TAG = "UserPreferencesDataSource"
     }
