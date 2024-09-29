@@ -16,8 +16,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.zebra.feature.feature_flag.featureFlagGraph
-import com.maksimowiczm.feature.send.SendScreen
-import com.maksimowiczm.feature.send.sendGraph
+import com.maksimowiczm.feature.share.ShareScreen
+import com.maksimowiczm.feature.share.shareGraph
 import com.maksimowiczm.zebra.core.biometry.BiometricManager
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
 import com.maksimowiczm.zebra.feature.vault.VaultRoute
@@ -54,15 +54,14 @@ fun ZebraApp(
                         biometricManager = biometricManager,
                         onNavigateSend = { vaultIdentifier, entryIdentifier ->
                             navController.navigate(
-                                SendScreen.SendEntryScreen(
+                                ShareScreen.ShareEntryScreen(
                                     vaultIdentifier,
                                     entryIdentifier
                                 )
                             )
                         }
                     )
-                    sendGraph(navController = navController)
-                    featureFlagGraph(navController = navController)
+                    shareGraph(navController = navController)
                 }
             }
         }

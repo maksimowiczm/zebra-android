@@ -1,4 +1,4 @@
-package com.maksimowiczm.feature.send.connection
+package com.maksimowiczm.feature.share.connection
 
 internal sealed interface ConnectionUiState {
     data object Loading : ConnectionUiState

@@ -31,7 +31,7 @@ internal class OpenedVaultViewModel @Inject constructor(
 ) : ViewModel() {
     private val identifier = savedStateHandle.toRoute<VaultScreen.OpenedVaultScreen>().identifier
 
-    val featureSend = featureFlagRepository.observeFeatureFlag(FeatureFlag.FEATURE_SEND).stateIn(
+    val featureShare = featureFlagRepository.observeFeatureFlag(FeatureFlag.FEATURE_SHARE).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = false

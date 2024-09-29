@@ -52,7 +52,7 @@ internal fun OpenedVaultScreen(
     viewModel: OpenedVaultViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
-    val featureSend by viewModel.featureSend.collectAsStateWithLifecycle()
+    val featureShare by viewModel.featureShare.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     BackHandler {
@@ -80,7 +80,7 @@ internal fun OpenedVaultScreen(
         is OpenVaultUiState.Unlocked -> {
             val state = uiState as OpenVaultUiState.Unlocked
 
-            val shareHandler = if (featureSend) {
+            val shareHandler = if (featureShare) {
                 if (state.networkStatus == NetworkStatus.Online) {
                     ShareHandler.Enabled { entryIdentifier ->
                         onShare(state.vault.identifier, entryIdentifier)

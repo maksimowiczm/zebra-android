@@ -1,4 +1,4 @@
-package com.maksimowiczm.feature.send.scanner
+package com.maksimowiczm.feature.share.scanner
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -52,7 +52,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.maksimowiczm.feature.send.R
+import com.maksimowiczm.feature.share.R
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
 import kotlinx.coroutines.delay
 

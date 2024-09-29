@@ -1,10 +1,10 @@
-package com.maksimowiczm.feature.send.connection
+package com.maksimowiczm.feature.share.connection
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.maksimowiczm.feature.send.SendScreen
+import com.maksimowiczm.feature.share.ShareScreen
 import com.maksimowiczm.zebra.core.common.combineN
 import com.maksimowiczm.zebra.core.data.model.VaultEntryIdentifier
 import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
@@ -31,7 +31,7 @@ internal class ConnectionViewModel @Inject constructor(
     private val session: String
 
     init {
-        val route = savedStateHandle.toRoute<SendScreen.ConnectionScreen>()
+        val route = savedStateHandle.toRoute<ShareScreen.ConnectionScreen>()
         vaultIdentifier = route.vaultIdentifier
         entryIdentifier = route.entryIdentifier
         session = route.session

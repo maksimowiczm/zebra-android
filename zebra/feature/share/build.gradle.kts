@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.maksimowiczm.feature.send"
+    namespace = "com.maksimowiczm.feature.share"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

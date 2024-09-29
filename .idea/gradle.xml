@@ -24,7 +24,7 @@
             <option value="$PROJECT_DIR$/zebra/core/peer" />
             <option value="$PROJECT_DIR$/zebra/feature" />
             <option value="$PROJECT_DIR$/zebra/feature/feature-flag" />
-            <option value="$PROJECT_DIR$/zebra/feature/send" />
+            <option value="$PROJECT_DIR$/zebra/feature/share" />
             <option value="$PROJECT_DIR$/zebra/feature/vault" />
           </set>
         </option>

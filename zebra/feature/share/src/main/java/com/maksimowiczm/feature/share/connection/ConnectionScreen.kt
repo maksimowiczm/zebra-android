@@ -1,4 +1,4 @@
-package com.maksimowiczm.feature.send.connection
+package com.maksimowiczm.feature.share.connection
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.maksimowiczm.feature.send.R
+import com.maksimowiczm.feature.share.R
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
 
 @Composable
