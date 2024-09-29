@@ -7,6 +7,7 @@ import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.maksimowiczm.feature.share.connection.ConnectionScreen
 import com.maksimowiczm.feature.share.scanner.QrScannerScreen
+import com.maksimowiczm.feature.share.setup.ShareSetupScreen
 import com.maksimowiczm.zebra.core.data.model.VaultEntryIdentifier
 import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
 import kotlinx.serialization.Serializable
@@ -30,6 +31,9 @@ sealed interface ShareScreen {
         val entryIdentifier: VaultEntryIdentifier,
         val session: String,
     ) : ShareScreen
+
+    @Serializable
+    data object ShareSetupScreen : ShareScreen
 }
 
 fun NavGraphBuilder.shareGraph(navController: NavController) {
@@ -62,6 +66,11 @@ fun NavGraphBuilder.shareGraph(navController: NavController) {
                     )
                 },
                 onFailureBack = { navController.popBackStack() }
+            )
+        }
+        composable<ShareScreen.ShareSetupScreen> {
+            ShareSetupScreen(
+                onNavigateUp = { navController.popBackStack() }
             )
         }
     }

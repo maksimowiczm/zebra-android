@@ -6,4 +6,5 @@ option java_multiple_files = true;
 message UserPreferences {
   bytes biometric_identifier = 1;
   map<string, bool> feature_flags = 2;
+  optional string signaling_server_url = 3;
 }

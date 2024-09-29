@@ -9,9 +9,6 @@ android {
     namespace = "com.maksimowiczm.zebra.core.peer"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
-    buildFeatures {
-        buildConfig = true
-    }
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
@@ -27,10 +24,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-        debug {
-            val WS_SERVER: String by project
-            buildConfigField("String", "WS_SOCKET", WS_SERVER)
         }
     }
     compileOptions {

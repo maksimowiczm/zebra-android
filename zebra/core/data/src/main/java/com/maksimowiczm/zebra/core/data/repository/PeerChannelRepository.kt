@@ -6,10 +6,12 @@ import com.github.michaelbull.result.mapError
 import com.maksimowiczm.zebra.core.data.model.PeerChannel
 import com.maksimowiczm.zebra.core.data.model.VaultEntry
 import com.maksimowiczm.zebra.core.data.model.toProto
+import com.maksimowiczm.zebra.core.datastore.UserPreferencesDataSource
 import com.maksimowiczm.zebra.core.peer.api.PeerChannel.Status
 import com.maksimowiczm.zebra.core.peer.webrtc.CreateError.*
 import com.maksimowiczm.zebra.core.peer.webrtc.WebRtcDataSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -20,7 +22,16 @@ sealed interface CreateError {
 
 class PeerChannelRepository @Inject constructor(
     private val webRtcDataSource: WebRtcDataSource,
+    private val userPreferencesDataSource: UserPreferencesDataSource,
 ) {
+    fun observeSignalingServerUrl(): Flow<String> {
+        return userPreferencesDataSource.observeSignalingServerUrl()
+    }
+
+    suspend fun updateSignalingServerUrl(signalingServerUrl: String) {
+        userPreferencesDataSource.updateSignalingServerUrl(signalingServerUrl)
+    }
+
     /**
      * Observe [PeerChannel] for [sessionIdentifier].
      * @return [Flow] of [PeerChannel] or null if [sessionIdentifier] is not found.
@@ -46,7 +57,12 @@ class PeerChannelRepository @Inject constructor(
      * @return [Result] of [Unit] or [CreateError].
      */
     suspend fun connectPeerChannel(sessionIdentifier: String): Result<Unit, CreateError> {
-        return webRtcDataSource.createPeerChannelConnection(sessionIdentifier).mapError {
+        val signalingServerUrl = userPreferencesDataSource.observeSignalingServerUrl().first()
+
+        return webRtcDataSource.createPeerChannelConnection(
+            sessionIdentifier = sessionIdentifier,
+            signalingChannelUrl = signalingServerUrl,
+        ).mapError {
             when (it) {
                 PeerChannelAlreadyExists, PeerChannelIsNotClosed -> CreateError.PeerChannelAlreadyExists
                 Unknown -> CreateError.Unknown

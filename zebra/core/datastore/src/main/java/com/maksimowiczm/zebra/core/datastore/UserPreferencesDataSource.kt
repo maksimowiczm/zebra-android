@@ -58,6 +58,23 @@ class UserPreferencesDataSource(
         }
     }
 
+    fun observeSignalingServerUrl(): Flow<String> {
+        return userPreferencesStore.data.map { it.signalingServerUrl }
+    }
+
+    suspend fun updateSignalingServerUrl(url: String?) {
+        runCatching {
+            userPreferencesStore.updateData { currentPreferences ->
+                currentPreferences.toBuilder()
+                    .setSignalingServerUrl(url)
+                    .build()
+            }
+        }.getOrElse {
+            Log.e(TAG, "Error updating signaling server URL.", it)
+            throw it
+        }
+    }
+
     companion object {
         private const val TAG = "UserPreferencesDataSource"
     }

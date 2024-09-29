@@ -62,6 +62,16 @@ fun ZebraApp(
                         }
                     )
                     shareGraph(navController = navController)
+                    featureFlagGraph(
+                        navController = navController,
+                        onShareToggle = { value, fallback ->
+                            if (value) {
+                                navController.navigate(ShareScreen.ShareSetupScreen)
+                            } else {
+                                fallback(false)
+                            }
+                        }
+                    )
                 }
             }
         }

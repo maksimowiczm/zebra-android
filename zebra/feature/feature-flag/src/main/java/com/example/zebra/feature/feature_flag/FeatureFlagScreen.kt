@@ -86,7 +86,7 @@ private fun FeatureFlagScreen(
                     )
                     Switch(
                         checked = value,
-                        onCheckedChange = { onToggle(featureFlag, it) }
+                        onCheckedChange = { onToggle(featureFlag, !value) }
                     )
                 }
             }
