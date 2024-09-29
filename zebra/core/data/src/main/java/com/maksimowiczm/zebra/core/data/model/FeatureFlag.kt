@@ -9,3 +9,7 @@ enum class FeatureFlag(
         defaultIsEnabled = false,
     )
 }
+
+val FEATURE_FLAGS = listOf(
+    FeatureFlag.FEATURE_SEND,
+)

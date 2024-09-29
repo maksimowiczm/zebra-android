@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.example.zebra.feature.feature_flag.featureFlagGraph
 import com.maksimowiczm.feature.send.SendScreen
 import com.maksimowiczm.feature.send.sendGraph
 import com.maksimowiczm.zebra.core.biometry.BiometricManager
@@ -61,6 +62,7 @@ fun ZebraApp(
                         }
                     )
                     sendGraph(navController = navController)
+                    featureFlagGraph(navController = navController)
                 }
             }
         }

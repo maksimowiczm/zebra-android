@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_flags">Feature Flags</string>
+    <string name="close">Close</string>
+    <string name="experimental_features_may_break_things">Experimental features. May break things.</string>
+</resources>
