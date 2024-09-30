@@ -22,6 +22,7 @@
             <option value="$PROJECT_DIR$/zebra/core/domain" />
             <option value="$PROJECT_DIR$/zebra/core/network" />
             <option value="$PROJECT_DIR$/zebra/core/peer" />
+            <option value="$PROJECT_DIR$/zebra/core/zebra-signal" />
             <option value="$PROJECT_DIR$/zebra/feature" />
             <option value="$PROJECT_DIR$/zebra/feature/feature-flag" />
             <option value="$PROJECT_DIR$/zebra/feature/share" />

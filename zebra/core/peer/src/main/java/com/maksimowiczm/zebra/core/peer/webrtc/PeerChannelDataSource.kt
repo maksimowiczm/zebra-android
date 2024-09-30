@@ -6,7 +6,7 @@ import com.github.michaelbull.result.Ok
 import com.maksimowiczm.zebra.core.peer.api.PeerChannel
 import kotlinx.coroutines.flow.Flow
 import com.github.michaelbull.result.Result
-import com.maksimowiczm.zebra.core.peer.socket.ZebraWebRTCOkHttpSocketFactory
+import com.maksimowiczm.core.zebra.zebra_signal.ZebraSignalClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -104,7 +104,7 @@ class WebRtcDataSource(
 
     suspend fun createPeerChannelConnection(
         sessionIdentifier: String,
-        signalingChannelUrl: String,
+        zebraSignalClient: ZebraSignalClient,
     ): Result<Unit, CreateError> {
         val canCreateResult = canCreatePeerChannel(sessionIdentifier)
         if (canCreateResult.isErr) {
@@ -118,14 +118,18 @@ class WebRtcDataSource(
             peerStatus[sessionIdentifier] = MutableStateFlow(PeerChannel.Status.CONNECTING)
         }
 
+        val socket = zebraSignalClient.getSocket(
+            serializer = WebRTCMessageSerializer(),
+            token = sessionIdentifier,
+        )
+
         val builder = WebRtcPeerChannelBuilder(
             context = context,
             ioDispatcher = ioDispatcher,
-            socketFactory = ZebraWebRTCOkHttpSocketFactory(signalingChannelUrl),
         )
 
         val listener = PeerChannelListener(sessionIdentifier)
-        val peerChannel = builder.build(sessionIdentifier, listener)
+        val peerChannel = builder.build(socket, listener)
 
         // If channel creation failed, update status and return error
         if (peerChannel == null) {

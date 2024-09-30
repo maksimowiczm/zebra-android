@@ -1,4 +1,4 @@
-package com.maksimowiczm.zebra.core.peer.socket
+package com.maksimowiczm.core.zebra.zebra_signal
 
 /**
  * A socket that can send and receive messages of type [M].

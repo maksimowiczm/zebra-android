@@ -1,13 +1,13 @@
 package com.maksimowiczm.zebra.core.domain
 
-import com.maksimowiczm.zebra.core.data.repository.PeerChannelRepository
+import com.maksimowiczm.zebra.core.data.repository.ZebraSignalRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ObserveSignalingChannelUseCase @Inject constructor(
-    private val peerChannelRepository: PeerChannelRepository,
+    private val zebraSignalRepository: ZebraSignalRepository
 ) {
     operator fun invoke(): Flow<String> {
-        return peerChannelRepository.observeSignalingServerUrl()
+        return zebraSignalRepository.observeZebraSignalUrl()
     }
 }

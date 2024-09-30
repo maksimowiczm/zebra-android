@@ -2,18 +2,15 @@ package com.maksimowiczm.zebra.core.peer.webrtc
 
 import android.content.Context
 import android.util.Log
+import com.maksimowiczm.core.zebra.zebra_signal.Socket
 import com.maksimowiczm.zebra.core.peer.api.PeerChannel
-import com.maksimowiczm.zebra.core.peer.socket.Socket
-import com.maksimowiczm.zebra.core.peer.socket.SocketFactory
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.webrtc.DataChannel
 import org.webrtc.IceCandidate
 import org.webrtc.MediaConstraints
@@ -27,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 internal class WebRtcPeerChannelBuilder(
     context: Context,
-    private val socketFactory: SocketFactory<WebRTCMessage>,
     private val ioDispatcher: CoroutineDispatcher,
 ) {
     private val factory by lazy {
@@ -41,13 +37,11 @@ internal class WebRtcPeerChannelBuilder(
     }
 
     fun build(
-        session: String,
+        socket: Socket<WebRTCMessage>,
         listener: PeerChannel.Listener,
     ): PeerChannel? {
-        val signalingChannel = socketFactory.create(token = session)
-
         val builder = DataChannelBuilder(
-            signalingChannel = signalingChannel,
+            signalingChannel = socket,
             listener = listener,
             ioDispatcher = ioDispatcher,
         )

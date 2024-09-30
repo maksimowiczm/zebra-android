@@ -39,6 +39,7 @@ dependencies {
 
     implementation(project(":zebra:core:database"))
     implementation(project(":zebra:core:datastore"))
+    implementation(project(":zebra:core:zebra-signal"))
 
     // Kotpass
     implementation(libs.kotpass)

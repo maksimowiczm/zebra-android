@@ -37,6 +37,8 @@ android {
 
 dependencies {
 
+    implementation(project(":zebra:core:zebra-signal"))
+
     // Result
     implementation(libs.kotlin.result)
 
