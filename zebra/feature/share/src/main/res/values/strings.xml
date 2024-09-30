@@ -8,4 +8,11 @@
     <string name="done">Done</string>
     <string name="cancel">Cancel</string>
     <string name="try_again">Try again</string>
+    <string name="share_setup">Share Setup</string>
+    <string name="you_need_to_setup_a_zebrasignal_server">In order to share your data, you need to setup a ZebraSignal server.</string>
+    <string name="invalid_url">Invalid URL</string>
+    <string name="url">URL</string>
+    <string name="setup_anyway">Setup anyway</string>
+    <string name="validating_url">Validating URL</string>
+    <string name="setup">Setup</string>
 </resources>

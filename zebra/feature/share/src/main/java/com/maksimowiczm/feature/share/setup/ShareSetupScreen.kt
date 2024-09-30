@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -17,10 +18,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -73,7 +76,8 @@ internal fun ShareSetupScreen(
                 isLoading = state.isLoading,
                 signalingServerUrl = state.signalingServer,
                 onInput = viewModel::onInput,
-                onSubmit = viewModel::onSetup,
+                onSubmit = { viewModel.onSetup(validate = true) },
+                onForceSubmit = { viewModel.onSetup(validate = false) },
             )
         }
     }
@@ -88,12 +92,13 @@ private fun ShareSetupScreen(
     signalingServerUrl: String,
     onInput: (String) -> Unit,
     onSubmit: () -> Unit,
+    onForceSubmit: () -> Unit,
 ) {
     Column {
         TopAppBar(
             title = {
                 Text(
-                    text = "Share Setup",
+                    text = stringResource(R.string.share_setup),
                     style = MaterialTheme.typography.headlineLarge
                 )
             },
@@ -114,7 +119,7 @@ private fun ShareSetupScreen(
                 .sizeIn(minHeight = 200.dp),
         ) {
             Text(
-                text = "In order to share your data, you need to setup a signaling server.",
+                text = stringResource(R.string.you_need_to_setup_a_zebrasignal_server),
                 style = MaterialTheme.typography.bodyLarge,
             )
             Form(
@@ -123,6 +128,8 @@ private fun ShareSetupScreen(
                 signalingServerUrl = signalingServerUrl,
                 onInput = onInput,
                 onSubmit = onSubmit,
+                onCancel = onNavigateUp,
+                onForceSubmit = onForceSubmit,
             )
         }
     }
@@ -135,6 +142,8 @@ private fun Form(
     signalingServerUrl: String,
     onInput: (String) -> Unit,
     onSubmit: () -> Unit,
+    onForceSubmit: () -> Unit,
+    onCancel: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -150,7 +159,7 @@ private fun Form(
             if (isError) {
                 Text(
                     modifier = Modifier.padding(bottom = 8.dp),
-                    text = "Invalid signaling server URL",
+                    text = stringResource(R.string.invalid_url),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.error,
                 )
@@ -158,9 +167,10 @@ private fun Form(
 
             TextField(
                 modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading,
                 value = signalingServerUrl,
                 onValueChange = onInput,
-                label = { Text("Signaling server URL") },
+                label = { Text(stringResource(R.string.url)) },
                 singleLine = true,
                 isError = isError,
                 keyboardActions = KeyboardActions(onDone = { onSubmit() }),
@@ -172,34 +182,64 @@ private fun Form(
                 .weight(.5f),
             contentAlignment = Alignment.BottomCenter,
         ) {
-
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onSubmit,
-                enabled = !isLoading,
-            ) {
-                if (isLoading) {
-                    val rotation = remember { Animatable(0f) }
-
-                    LaunchedEffect(Unit) {
-                        rotation.animateTo(
-                            targetValue = 360f,
-                            animationSpec = infiniteRepeatable(
-                                animation = tween(
-                                    durationMillis = 1000,
-                                    easing = LinearEasing
-                                ),
-                            ),
-                        )
+            if (isError && !isLoading) {
+                Column {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = onSubmit,
+                    ) {
+                        Text(stringResource(R.string.try_again))
                     }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            onClick = onCancel,
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = MaterialTheme.colorScheme.error,
+                                containerColor = MaterialTheme.colorScheme.errorContainer
+                            )
+                        ) {
+                            Text(stringResource(R.string.cancel))
+                        }
+                        OutlinedButton(
+                            modifier = Modifier.weight(1f),
+                            onClick = onForceSubmit,
+                        ) {
+                            Text(stringResource(R.string.setup_anyway))
+                        }
+                    }
+                }
+            } else {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onSubmit,
+                    enabled = !isLoading,
+                ) {
+                    if (isLoading) {
+                        val rotation = remember { Animatable(0f) }
 
-                    Icon(
-                        modifier = Modifier.rotate(rotation.value),
-                        imageVector = Icons.Default.Refresh,
-                        contentDescription = "Validating signaling server URL",
-                    )
-                } else {
-                    Text("Setup")
+                        LaunchedEffect(Unit) {
+                            rotation.animateTo(
+                                targetValue = 360f,
+                                animationSpec = infiniteRepeatable(
+                                    animation = tween(
+                                        durationMillis = 1000,
+                                        easing = LinearEasing
+                                    ),
+                                ),
+                            )
+                        }
+
+                        Icon(
+                            modifier = Modifier.rotate(rotation.value),
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = stringResource(R.string.validating_url),
+                        )
+                    } else {
+                        Text(stringResource(R.string.setup))
+                    }
                 }
             }
         }
@@ -220,6 +260,7 @@ private fun ShareSetupScreenPreview(
                 signalingServerUrl = "https://zebra.com",
                 onInput = {},
                 onSubmit = {},
+                onForceSubmit = {},
             )
         }
     }
@@ -237,6 +278,7 @@ private fun LoadingShareSetupScreenPreview() {
                 signalingServerUrl = "https://zebra.com",
                 onInput = {},
                 onSubmit = {},
+                onForceSubmit = {},
             )
         }
     }

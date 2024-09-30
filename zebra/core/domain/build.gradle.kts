@@ -38,6 +38,7 @@ dependencies {
 
     implementation(project(":zebra:core:biometry"))
     implementation(project(":zebra:core:data"))
+    implementation(project(":zebra:core:zebra-signal"))
 
     // Result monad
     implementation(libs.kotlin.result)

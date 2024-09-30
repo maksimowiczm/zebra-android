@@ -12,15 +12,19 @@ class ZebraSignalClient(
     private val url: String,
 ) {
     suspend fun ping(): Boolean {
-        val request = okhttp3.Request.Builder()
-            .url("$url/ping")
-            .build()
+        try {
+            val request = okhttp3.Request.Builder()
+                .url("$url/ping")
+                .build()
 
-        val response = withContext(ioDispatcher) {
-            return@withContext OkHttpClient().newCall(request).execute()
+            val response = withContext(ioDispatcher) {
+                return@withContext OkHttpClient().newCall(request).execute()
+            }
+
+            return response.isSuccessful
+        } catch (e: Exception) {
+            return false
         }
-
-        return response.isSuccessful
     }
 
     fun <M> getSocket(

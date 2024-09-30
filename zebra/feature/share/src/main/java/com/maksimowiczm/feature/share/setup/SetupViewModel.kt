@@ -2,9 +2,11 @@ package com.maksimowiczm.feature.share.setup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.michaelbull.result.getOrElse
 import com.maksimowiczm.zebra.core.data.model.FeatureFlag
 import com.maksimowiczm.zebra.core.data.repository.FeatureFlagRepository
 import com.maksimowiczm.zebra.core.domain.ObserveSignalingChannelUseCase
+import com.maksimowiczm.zebra.core.domain.SetupError
 import com.maksimowiczm.zebra.core.domain.SetupSignalingChannelUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,9 +45,9 @@ internal class SetupViewModel @Inject constructor(
         _internalUiState.update { it.copy(signalingServer = signalingServer) }
     }
 
-    fun onSetup() {
+    fun onSetup(validate: Boolean) {
         viewModelScope.launch {
-            _internalUiState.update { it.copy(isLoading = true) }
+            _internalUiState.update { it.copy(isLoading = true, isError = false) }
 
             val state = uiState.value
             if (state !is SetupUiState.Ready) {
@@ -55,13 +57,23 @@ internal class SetupViewModel @Inject constructor(
             val signalingServer =
                 _internalUiState.value.signalingServer?.trim() ?: state.signalingServer
 
-            val result = setupSignalingChannelUseCase(signalingServer)
-            if (result.isErr) {
-                _internalUiState.update { it.copy(isError = true, isLoading = false) }
-            } else {
-                featureFlagRepository.updateFeatureFlag(FeatureFlag.FEATURE_SHARE, true)
-                _internalUiState.update { it.copy(isLoading = false, isDone = true) }
+            setupSignalingChannelUseCase(
+                signalingServer = signalingServer,
+                validate = validate
+            ).getOrElse { err ->
+                when (err) {
+                    SetupError.SignalingChannelPingPongFailed -> {
+                        _internalUiState.update {
+                            it.copy(isLoading = false, isError = true)
+                        }
+                    }
+                }
+
+                return@launch
             }
+
+            featureFlagRepository.updateFeatureFlag(FeatureFlag.FEATURE_SHARE, true)
+            _internalUiState.update { it.copy(isLoading = false, isDone = true) }
         }
     }
 }
