@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.example.zebra.feature.feature_flag.FeatureFlagRoute
 import com.example.zebra.feature.feature_flag.featureFlagGraph
 import com.maksimowiczm.feature.share.ShareScreen
 import com.maksimowiczm.feature.share.shareGraph
@@ -59,7 +60,8 @@ fun ZebraApp(
                                     entryIdentifier
                                 )
                             )
-                        }
+                        },
+                        onNavigateFeatureFlag = { navController.navigate(FeatureFlagRoute) }
                     )
                     shareGraph(navController = navController)
                     featureFlagGraph(

@@ -1,6 +1,7 @@
 package com.maksimowiczm.zebra.feature.vault.home
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,6 +43,7 @@ internal fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onVaultClick: (Vault) -> Unit,
     onImport: () -> Unit,
+    onShowSecret: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -48,6 +54,7 @@ internal fun HomeScreen(
             vaults = state.vaults,
             onVaultClick = onVaultClick,
             onAddVault = onImport,
+            onShowSecret = onShowSecret,
         )
     }
 }
@@ -80,6 +87,7 @@ private fun HomeScreen(
     vaults: List<Vault>,
     onVaultClick: (Vault) -> Unit,
     onAddVault: () -> Unit,
+    onShowSecret: () -> Unit,
 ) {
     // FAB
     Column(
@@ -102,7 +110,19 @@ private fun HomeScreen(
     Column {
         TopAppBar(
             title = {
+                val interactionSource = remember { MutableInteractionSource() }
+                var count by rememberSaveable { mutableIntStateOf(0) }
                 Text(
+                    modifier = Modifier.clickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                    ) {
+                        count++
+                        if (count == 5) {
+                            onShowSecret()
+                            count = 0
+                        }
+                    },
                     text = stringResource(R.string.vaults),
                     style = MaterialTheme.typography.headlineLarge,
                 )
@@ -158,6 +178,7 @@ private fun HomeScreenPreview(
                 vaults = vaults,
                 onVaultClick = {},
                 onAddVault = {},
+                onShowSecret = {},
             )
         }
     }

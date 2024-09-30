@@ -39,6 +39,7 @@ fun NavGraphBuilder.vaultGraph(
     navController: NavController,
     biometricManager: BiometricManager,
     onNavigateSend: (VaultIdentifier, VaultEntryIdentifier) -> Unit,
+    onNavigateFeatureFlag: () -> Unit,
 ) {
     navigation<VaultRoute>(
         startDestination = VaultScreen.VaultHomeScreen
@@ -56,7 +57,8 @@ fun NavGraphBuilder.vaultGraph(
                 },
                 onVaultClick = {
                     navController.navigate(VaultScreen.UnlockVaultScreen(it.identifier))
-                }
+                },
+                onShowSecret = onNavigateFeatureFlag,
             )
         }
         composable<VaultScreen.ImportVaultScreen> {
