@@ -1,7 +1,7 @@
 package com.maksimowiczm.zebra.core.data.repository
 
-import com.maksimowiczm.core.zebra.zebra_signal.ZebraSignalClient
-import com.maksimowiczm.core.zebra.zebra_signal.ZebraSignalClientFactory
+import com.maksimowiczm.zebra.core.zebra_signal.ZebraSignalClient
+import com.maksimowiczm.zebra.core.zebra_signal.ZebraSignalClientFactory
 import com.maksimowiczm.zebra.core.datastore.UserPreferencesDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first

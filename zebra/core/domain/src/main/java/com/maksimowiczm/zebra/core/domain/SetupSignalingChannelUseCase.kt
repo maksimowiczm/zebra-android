@@ -4,8 +4,8 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.getOrElse
-import com.maksimowiczm.core.zebra.zebra_signal.ZebraSignalClient
-import com.maksimowiczm.core.zebra.zebra_signal.ZebraSignalClientFactory
+import com.maksimowiczm.zebra.core.zebra_signal.ZebraSignalClient
+import com.maksimowiczm.zebra.core.zebra_signal.ZebraSignalClientFactory
 import com.maksimowiczm.zebra.core.data.repository.ZebraSignalRepository
 import javax.inject.Inject
 

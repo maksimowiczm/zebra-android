@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.maksimowiczm.feature.share"
+    namespace = "com.maksimowiczm.zebra.feature.share"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

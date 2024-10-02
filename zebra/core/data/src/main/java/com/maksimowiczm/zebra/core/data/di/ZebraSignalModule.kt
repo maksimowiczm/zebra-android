@@ -1,6 +1,6 @@
 package com.maksimowiczm.zebra.core.data.di
 
-import com.maksimowiczm.core.zebra.zebra_signal.ZebraSignalClientFactory
+import com.maksimowiczm.zebra.core.zebra_signal.ZebraSignalClientFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

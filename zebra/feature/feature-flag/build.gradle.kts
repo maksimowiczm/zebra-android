@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.zebra.feature.feature_flag"
+    namespace = "com.maksimowiczm.zebra.feature.feature_flag"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

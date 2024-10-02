@@ -15,12 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.example.zebra.feature.feature_flag.FeatureFlagRoute
-import com.example.zebra.feature.feature_flag.featureFlagGraph
-import com.maksimowiczm.feature.share.ShareScreen
-import com.maksimowiczm.feature.share.shareGraph
+import com.maksimowiczm.zebra.feature.share.ShareScreen
+import com.maksimowiczm.zebra.feature.share.shareGraph
 import com.maksimowiczm.zebra.core.biometry.BiometricManager
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
+import com.maksimowiczm.zebra.feature.feature_flag.FeatureFlagRoute
+import com.maksimowiczm.zebra.feature.feature_flag.featureFlagGraph
 import com.maksimowiczm.zebra.feature.vault.VaultRoute
 import com.maksimowiczm.zebra.feature.vault.vaultGraph
 

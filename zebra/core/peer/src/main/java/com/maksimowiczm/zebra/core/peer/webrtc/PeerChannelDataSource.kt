@@ -7,7 +7,7 @@ import com.maksimowiczm.zebra.core.peer.api.PeerChannel
 import kotlinx.coroutines.flow.Flow
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.getOrElse
-import com.maksimowiczm.core.zebra.zebra_signal.ZebraSignalClient
+import com.maksimowiczm.zebra.core.zebra_signal.ZebraSignalClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
