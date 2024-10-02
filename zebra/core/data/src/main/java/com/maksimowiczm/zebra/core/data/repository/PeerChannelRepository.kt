@@ -55,7 +55,7 @@ class PeerChannelRepository @Inject constructor(
         ).mapError {
             when (it) {
                 PeerChannelAlreadyExists, PeerChannelIsNotClosed -> CreateError.PeerChannelAlreadyExists
-                Unknown -> CreateError.Unknown
+                Unknown, is SocketError -> CreateError.Unknown
             }
         }
     }

@@ -38,12 +38,13 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maksimowiczm.feature.share.R
-import com.maksimowiczm.zebra.core.common_ui.composable.BooleanParameterPreviewProvider
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
+import com.maksimowiczm.zebra.core.domain.SetupError
 
 @Composable
 internal fun ShareSetupScreen(
@@ -72,7 +73,7 @@ internal fun ShareSetupScreen(
 
             ShareSetupScreen(
                 onNavigateUp = onNavigateUp,
-                isError = state.isError,
+                error = state.error,
                 isLoading = state.isLoading,
                 signalingServerUrl = state.signalingServer,
                 onInput = viewModel::onInput,
@@ -87,7 +88,7 @@ internal fun ShareSetupScreen(
 @Composable
 private fun ShareSetupScreen(
     onNavigateUp: () -> Unit,
-    isError: Boolean,
+    error: SetupError?,
     isLoading: Boolean,
     signalingServerUrl: String,
     onInput: (String) -> Unit,
@@ -123,7 +124,7 @@ private fun ShareSetupScreen(
                 style = MaterialTheme.typography.bodyLarge,
             )
             Form(
-                isError = isError,
+                error = error,
                 isLoading = isLoading,
                 signalingServerUrl = signalingServerUrl,
                 onInput = onInput,
@@ -137,7 +138,7 @@ private fun ShareSetupScreen(
 
 @Composable
 private fun Form(
-    isError: Boolean,
+    error: SetupError?,
     isLoading: Boolean,
     signalingServerUrl: String,
     onInput: (String) -> Unit,
@@ -145,6 +146,8 @@ private fun Form(
     onForceSubmit: () -> Unit,
     onCancel: () -> Unit,
 ) {
+    val isError = error != null
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -156,13 +159,26 @@ private fun Form(
                 .weight(.5f),
             verticalArrangement = Arrangement.Bottom,
         ) {
-            if (isError) {
-                Text(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    text = stringResource(R.string.invalid_url),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.error,
-                )
+            when (error) {
+                SetupError.SignalingChannelPingPongFailed -> {
+                    Text(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        text = stringResource(R.string.invalid_url),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+
+                SetupError.UnsecureConnection -> {
+                    Text(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        text = "Unsecure connection. Only HTTPS is allowed.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+
+                null -> Unit
             }
 
             TextField(
@@ -249,14 +265,14 @@ private fun Form(
 @PreviewLightDark
 @Composable
 private fun ShareSetupScreenPreview(
-    @PreviewParameter(BooleanParameterPreviewProvider::class) isError: Boolean,
+    @PreviewParameter(SetupErrorPreviewParameterProvider::class) error: SetupError?,
 ) {
     ZebraTheme {
         Surface {
             ShareSetupScreen(
                 onNavigateUp = {},
                 isLoading = false,
-                isError = !isError,
+                error = error,
                 signalingServerUrl = "https://zebra.com",
                 onInput = {},
                 onSubmit = {},
@@ -274,7 +290,7 @@ private fun LoadingShareSetupScreenPreview() {
             ShareSetupScreen(
                 onNavigateUp = {},
                 isLoading = true,
-                isError = false,
+                error = null,
                 signalingServerUrl = "https://zebra.com",
                 onInput = {},
                 onSubmit = {},
@@ -282,4 +298,12 @@ private fun LoadingShareSetupScreenPreview() {
             )
         }
     }
+}
+
+private class SetupErrorPreviewParameterProvider : PreviewParameterProvider<SetupError?> {
+    override val values: Sequence<SetupError?> = sequenceOf(
+        null,
+        SetupError.SignalingChannelPingPongFailed,
+        SetupError.UnsecureConnection,
+    )
 }

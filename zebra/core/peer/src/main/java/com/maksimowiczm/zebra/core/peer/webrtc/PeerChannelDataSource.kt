@@ -6,6 +6,7 @@ import com.github.michaelbull.result.Ok
 import com.maksimowiczm.zebra.core.peer.api.PeerChannel
 import kotlinx.coroutines.flow.Flow
 import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.getOrElse
 import com.maksimowiczm.core.zebra.zebra_signal.ZebraSignalClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +23,7 @@ sealed interface ObserveError {
 sealed interface CreateError {
     data object PeerChannelAlreadyExists : CreateError
     data object PeerChannelIsNotClosed : CreateError
+    data class SocketError(val t: Throwable?) : CreateError
     data object Unknown : CreateError
 }
 
@@ -121,7 +123,15 @@ class WebRtcDataSource(
         val socket = zebraSignalClient.getSocket(
             serializer = WebRTCMessageSerializer(),
             token = sessionIdentifier,
-        )
+        ).getOrElse {
+            val throwable = when (it) {
+                ZebraSignalClient.SocketError.NotValidURL -> null
+                is ZebraSignalClient.SocketError.SocketFactoryError -> it.t
+            }
+
+            peerStatus[sessionIdentifier]!!.update { PeerChannel.Status.FAILED }
+            return Err(CreateError.SocketError(throwable))
+        }
 
         val builder = WebRtcPeerChannelBuilder(
             context = context,

@@ -11,6 +11,7 @@ import com.maksimowiczm.zebra.core.domain.SetupSignalingChannelUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -24,8 +25,9 @@ internal class SetupViewModel @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository,
 ) : ViewModel() {
     private val _internalUiState = MutableStateFlow(InternalSetupUiState())
-    val uiState = observeSignalingChannelUseCase()
-        .combine(_internalUiState) { signalingServer, internalUiState ->
+    val uiState: StateFlow<SetupUiState> = observeSignalingChannelUseCase()
+        .combine(_internalUiState)
+        { signalingServer, internalUiState ->
             if (internalUiState.isDone) {
                 return@combine SetupUiState.Done
             }
@@ -33,7 +35,7 @@ internal class SetupViewModel @Inject constructor(
             SetupUiState.Ready(
                 signalingServer = internalUiState.signalingServer ?: signalingServer,
                 isLoading = internalUiState.isLoading,
-                isError = internalUiState.isError,
+                error = internalUiState.error,
             )
         }.stateIn(
             scope = viewModelScope,
@@ -47,7 +49,7 @@ internal class SetupViewModel @Inject constructor(
 
     fun onSetup(validate: Boolean) {
         viewModelScope.launch {
-            _internalUiState.update { it.copy(isLoading = true, isError = false) }
+            _internalUiState.update { it.copy(isLoading = true, error = null) }
 
             val state = uiState.value
             if (state !is SetupUiState.Ready) {
@@ -61,14 +63,7 @@ internal class SetupViewModel @Inject constructor(
                 signalingServer = signalingServer,
                 validate = validate
             ).getOrElse { err ->
-                when (err) {
-                    SetupError.SignalingChannelPingPongFailed -> {
-                        _internalUiState.update {
-                            it.copy(isLoading = false, isError = true)
-                        }
-                    }
-                }
-
+                _internalUiState.update { it.copy(isLoading = false, error = err) }
                 return@launch
             }
 
@@ -81,6 +76,6 @@ internal class SetupViewModel @Inject constructor(
 private data class InternalSetupUiState(
     val signalingServer: String? = null,
     val isLoading: Boolean = false,
-    val isError: Boolean = false,
+    val error: SetupError? = null,
     val isDone: Boolean = false,
 )
