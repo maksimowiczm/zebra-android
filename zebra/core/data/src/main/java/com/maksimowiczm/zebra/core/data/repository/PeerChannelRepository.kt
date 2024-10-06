@@ -5,7 +5,10 @@ import com.github.michaelbull.result.getOrElse
 import com.github.michaelbull.result.mapError
 import com.maksimowiczm.zebra.core.data.model.PeerChannel
 import com.maksimowiczm.zebra.core.data.model.VaultEntry
-import com.maksimowiczm.zebra.core.data.model.toProto
+import com.maksimowiczm.zebra.core.data.model.protoPassword
+import com.maksimowiczm.zebra.core.data.model.protoTitle
+import com.maksimowiczm.zebra.core.data.model.protoUrl
+import com.maksimowiczm.zebra.core.data.model.protoUsername
 import com.maksimowiczm.zebra.core.peer.api.PeerChannel.Status
 import com.maksimowiczm.zebra.core.peer.webrtc.CreateError.*
 import com.maksimowiczm.zebra.core.peer.webrtc.WebRtcDataSource
@@ -61,7 +64,21 @@ class PeerChannelRepository @Inject constructor(
     }
 
     fun sendEntry(sessionIdentifier: String, entry: VaultEntry): Boolean {
-        return webRtcDataSource.sendMessage(sessionIdentifier, entry.toProto().toByteArray()).isOk
+        webRtcDataSource.sendMessage(sessionIdentifier, entry.protoTitle.toByteArray())
+
+        entry.protoUsername?.let {
+            webRtcDataSource.sendMessage(sessionIdentifier, it.toByteArray())
+        }
+
+        entry.protoPassword?.let {
+            webRtcDataSource.sendMessage(sessionIdentifier, it.toByteArray())
+        }
+
+        entry.protoUrl?.let {
+            webRtcDataSource.sendMessage(sessionIdentifier, it.toByteArray())
+        }
+
+        return true
     }
 
     /**

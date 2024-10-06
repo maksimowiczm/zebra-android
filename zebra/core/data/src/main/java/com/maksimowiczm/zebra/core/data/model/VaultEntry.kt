@@ -1,6 +1,7 @@
 package com.maksimowiczm.zebra.core.data.model
 
-import com.maksimowiczm.zebra.core.data.proto.VaultEntry as ProtoVaultEntry
+import com.maksimowiczm.zebra.proto.MessageOuterClass
+import com.maksimowiczm.zebra.proto.MessageOuterClass.Message
 
 typealias VaultEntryIdentifier = String
 
@@ -12,22 +13,36 @@ data class VaultEntry(
     val url: String? = null,
 )
 
-internal fun VaultEntry.toProto(): ProtoVaultEntry {
-    val builder = ProtoVaultEntry.newBuilder()
+internal val VaultEntry.protoTitle: Message
+    get() = Message.newBuilder()
+        .setDescription("title")
+        .setContent(title)
+        .setType(MessageOuterClass.MessageType.MESSAGE_TYPE_PUBLIC)
+        .build()
 
-    builder.setTitle(title)
-
-    if (this.username != null) {
-        builder.setUsername(username)
+internal val VaultEntry.protoUsername: Message?
+    get() = username?.let {
+        Message.newBuilder()
+            .setDescription("username")
+            .setContent(it)
+            .setType(MessageOuterClass.MessageType.MESSAGE_TYPE_PUBLIC)
+            .build()
     }
 
-    if (this.password != null) {
-        builder.setPassword(this.password.invoke())
+internal val VaultEntry.protoPassword: Message?
+    get() = password?.let {
+        Message.newBuilder()
+            .setDescription("password")
+            .setContent(it.invoke())
+            .setType(MessageOuterClass.MessageType.MESSAGE_TYPE_PRIVATE)
+            .build()
     }
 
-    if (this.url != null) {
-        builder.setUrl(this@toProto.url)
+internal val VaultEntry.protoUrl: Message?
+    get() = url?.let {
+        Message.newBuilder()
+            .setDescription("url")
+            .setContent(it)
+            .setType(MessageOuterClass.MessageType.MESSAGE_TYPE_PUBLIC)
+            .build()
     }
-
-    return builder.build()
-}
