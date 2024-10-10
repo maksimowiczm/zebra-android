@@ -1,7 +1,7 @@
 package com.maksimowiczm.zebra.feature.vault.unlock
 
-import com.maksimowiczm.zebra.core.data.model.Vault
-import com.maksimowiczm.zebra.core.data.model.VaultBiometricsStatus
+import com.maksimowiczm.zebra.core.data.api.model.Vault
+import com.maksimowiczm.zebra.core.data.api.model.VaultBiometricsStatus
 
 sealed interface UnlockUiState {
     data object Loading : UnlockUiState

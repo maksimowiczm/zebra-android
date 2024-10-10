@@ -45,7 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maksimowiczm.zebra.core.biometry.BiometricManager
 import com.maksimowiczm.zebra.core.common_ui.composable.BooleanParameterPreviewProvider
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
-import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
+import com.maksimowiczm.zebra.core.data.api.model.VaultIdentifier
 import com.maksimowiczm.zebra.feature_vault.R
 
 @Composable

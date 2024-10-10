@@ -1,7 +1,7 @@
 package com.maksimowiczm.zebra.feature.vault.import_vault
 
 import android.net.Uri
-import com.maksimowiczm.zebra.core.data.model.Vault
+import com.maksimowiczm.zebra.core.data.api.model.Vault
 
 
 internal sealed interface ImportVaultUiState {

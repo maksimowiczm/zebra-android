@@ -1,6 +1,6 @@
 package com.maksimowiczm.zebra.core.domain
 
-import com.maksimowiczm.zebra.core.data.repository.ZebraSignalRepository
+import com.maksimowiczm.zebra.core.data.api.repository.ZebraSignalRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

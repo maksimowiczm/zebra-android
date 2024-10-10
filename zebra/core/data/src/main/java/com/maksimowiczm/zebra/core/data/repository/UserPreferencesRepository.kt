@@ -1,21 +1,22 @@
 package com.maksimowiczm.zebra.core.data.repository
 
+import com.maksimowiczm.zebra.core.data.api.repository.UserPreferencesRepository
 import com.maksimowiczm.zebra.core.datastore.UserPreferencesDataSource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class UserPreferencesRepository @Inject constructor(
+internal class UserPreferencesRepositoryImpl @Inject constructor(
     private val userPreferencesDataSource: UserPreferencesDataSource,
-) {
-    fun observeBiometricIdentifier(): Flow<ByteArray> {
+) : UserPreferencesRepository {
+    override fun observeBiometricIdentifier(): Flow<ByteArray> {
         return userPreferencesDataSource.observeBiometricIdentifier()
     }
 
-    suspend fun getBiometricIdentifier(): ByteArray {
+    override suspend fun getBiometricIdentifier(): ByteArray {
         return userPreferencesDataSource.getBiometricIdentifier()
     }
 
-    suspend fun setBiometricIdentifier(identifier: ByteArray) {
+    override suspend fun setBiometricIdentifier(identifier: ByteArray) {
         return userPreferencesDataSource.updateBiometricIdentifier(identifier)
     }
 }

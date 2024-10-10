@@ -5,8 +5,7 @@ import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.getOrElse
 import com.maksimowiczm.zebra.core.zebra_signal.ZebraSignalClient
-import com.maksimowiczm.zebra.core.zebra_signal.ZebraSignalClientFactory
-import com.maksimowiczm.zebra.core.data.repository.ZebraSignalRepository
+import com.maksimowiczm.zebra.core.data.api.repository.ZebraSignalRepository
 import javax.inject.Inject
 
 sealed interface SetupError {
@@ -16,23 +15,20 @@ sealed interface SetupError {
 
 class SetupSignalingChannelUseCase @Inject constructor(
     private val zebraSignalRepository: ZebraSignalRepository,
-    private val zebraSignalClientFactory: ZebraSignalClientFactory,
 ) {
     suspend operator fun invoke(
         signalingServer: String,
         validate: Boolean = true,
     ): Result<Unit, SetupError> {
         if (validate) {
-            val zebraSignalClient = zebraSignalClientFactory.create(signalingServer)
-
-            zebraSignalClient.ping().getOrElse {
+            zebraSignalRepository.pingZebraSignalClient(signalingServer).getOrElse {
                 return when (it) {
                     is ZebraSignalClient.RequestError.HTTPError,
                     ZebraSignalClient.RequestError.NetworkError,
                     ZebraSignalClient.RequestError.NotValidURL,
                     ZebraSignalClient.RequestError.SerializationError,
                     ZebraSignalClient.RequestError.Unknown,
-                    -> Err(SetupError.SignalingChannelPingPongFailed)
+                        -> Err(SetupError.SignalingChannelPingPongFailed)
 
                     ZebraSignalClient.RequestError.UnsecureConnection -> Err(SetupError.UnsecureConnection)
                 }

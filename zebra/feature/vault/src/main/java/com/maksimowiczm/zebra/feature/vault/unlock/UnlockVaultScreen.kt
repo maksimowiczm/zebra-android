@@ -46,7 +46,7 @@ import com.maksimowiczm.zebra.core.biometry.BiometricManager
 import com.maksimowiczm.zebra.core.biometry.BiometryStatus
 import com.maksimowiczm.zebra.core.common_ui.SomethingWentWrongScreen
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
-import com.maksimowiczm.zebra.core.data.model.VaultBiometricsStatus
+import com.maksimowiczm.zebra.core.data.api.model.VaultBiometricsStatus
 import com.maksimowiczm.zebra.feature_vault.R
 
 @Composable

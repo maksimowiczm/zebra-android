@@ -1,4 +1,4 @@
-package com.maksimowiczm.zebra.core.data.crypto
+package com.maksimowiczm.zebra.core.data.api.crypto
 
 import com.github.michaelbull.result.Result
 

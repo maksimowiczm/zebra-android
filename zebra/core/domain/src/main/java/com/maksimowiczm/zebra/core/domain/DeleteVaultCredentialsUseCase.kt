@@ -1,7 +1,7 @@
 package com.maksimowiczm.zebra.core.domain
 
-import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
-import com.maksimowiczm.zebra.core.data.repository.SealedCredentialsRepository
+import com.maksimowiczm.zebra.core.data.api.model.VaultIdentifier
+import com.maksimowiczm.zebra.core.data.api.repository.SealedCredentialsRepository
 import javax.inject.Inject
 
 class DeleteVaultCredentialsUseCase @Inject constructor(

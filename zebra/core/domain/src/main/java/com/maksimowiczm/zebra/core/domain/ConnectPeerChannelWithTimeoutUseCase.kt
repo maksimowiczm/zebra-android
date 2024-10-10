@@ -1,14 +1,14 @@
 package com.maksimowiczm.zebra.core.domain
 
 import com.github.michaelbull.result.getOrElse
-import com.maksimowiczm.zebra.core.data.model.PeerChannel
-import com.maksimowiczm.zebra.core.data.repository.PeerChannelRepository
+import com.maksimowiczm.zebra.core.data.api.model.PeerChannel
+import com.maksimowiczm.zebra.core.data.api.repository.PeerChannelRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
-import com.maksimowiczm.zebra.core.data.repository.CreateError as RepositoryCreateError
+import com.maksimowiczm.zebra.core.data.api.repository.CreateError as RepositoryCreateError
 
 class ConnectPeerChannelWithTimeoutUseCase @Inject constructor(
     private val peerChannelRepository: PeerChannelRepository,

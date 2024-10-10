@@ -6,20 +6,18 @@ import android.net.Uri
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
+import com.maksimowiczm.zebra.core.data.api.repository.FileRepository
+import com.maksimowiczm.zebra.core.data.api.repository.OpenFileError
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.FileNotFoundException
 import java.io.InputStream
 import javax.inject.Inject
 
-sealed interface OpenFileError {
-    data object FileNotFound : OpenFileError
-    data object Unknown : OpenFileError
-}
 
-class FileRepository @Inject constructor(
+class FileRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-) {
-    fun persist(uri: Uri): Result<Unit, Unit> {
+) : FileRepository {
+    override fun persist(uri: Uri): Result<Unit, Unit> {
         try {
             context.contentResolver.takePersistableUriPermission(
                 uri,
@@ -32,7 +30,7 @@ class FileRepository @Inject constructor(
         }
     }
 
-    fun release(uri: Uri): Result<Unit, Unit> {
+    override fun release(uri: Uri): Result<Unit, Unit> {
         try {
             context.contentResolver.releasePersistableUriPermission(
                 uri,
@@ -45,7 +43,7 @@ class FileRepository @Inject constructor(
         }
     }
 
-    fun isReadable(uri: Uri): Boolean {
+    override fun isReadable(uri: Uri): Boolean {
         // todo this might be really bad idea to do
         try {
             context.contentResolver.openFileDescriptor(uri, "r")?.use { }
@@ -55,7 +53,7 @@ class FileRepository @Inject constructor(
         }
     }
 
-    fun openInputStream(uri: Uri): Result<InputStream, OpenFileError> {
+    override fun openInputStream(uri: Uri): Result<InputStream, OpenFileError> {
         val stream = runCatching {
             context.contentResolver.openInputStream(uri)
         }.getOrElse {

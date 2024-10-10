@@ -1,4 +1,4 @@
-package com.maksimowiczm.zebra.core.data.model
+package com.maksimowiczm.zebra.core.data.api.model
 
 sealed interface SealedVaultCredentials {
     val cryptoIdentifier: ByteArray

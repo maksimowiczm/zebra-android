@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
-import com.maksimowiczm.zebra.core.data.model.Vault
+import com.maksimowiczm.zebra.core.data.api.model.Vault
 import com.maksimowiczm.zebra.feature_vault.R
 
 @Composable

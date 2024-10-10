@@ -1,8 +1,8 @@
 package com.maksimowiczm.zebra.feature.vault.opened
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.maksimowiczm.zebra.core.data.model.VaultEntry
-import com.maksimowiczm.zebra.core.data.model.VaultEntryIdentifier
+import com.maksimowiczm.zebra.core.data.api.model.VaultEntry
+import com.maksimowiczm.zebra.core.data.api.model.VaultEntryIdentifier
 import java.util.UUID
 
 class VaultEntryProvider : PreviewParameterProvider<VaultEntry> {

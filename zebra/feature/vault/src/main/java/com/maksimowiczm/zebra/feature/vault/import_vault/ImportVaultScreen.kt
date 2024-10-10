@@ -45,7 +45,7 @@ import com.maksimowiczm.zebra.core.biometry.BiometryStatus
 import com.maksimowiczm.zebra.core.common_ui.SomethingWentWrongScreen
 import com.maksimowiczm.zebra.core.common_ui.composable.BooleanParameterPreviewProvider
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
-import com.maksimowiczm.zebra.core.data.model.Vault
+import com.maksimowiczm.zebra.core.data.api.model.Vault
 import com.maksimowiczm.zebra.feature.vault.home.VaultListProvider
 import com.maksimowiczm.zebra.feature_vault.R
 
@@ -88,7 +88,7 @@ internal fun ImportVaultScreen(
         ImportVaultUiState.Idle,
         ImportVaultUiState.Loading,
         is ImportVaultUiState.VaultExists,
-        -> LoadingScreen(onNavigateUp = onNavigateUp)
+            -> LoadingScreen(onNavigateUp = onNavigateUp)
 
         ImportVaultUiState.PickFileCanceled -> CancelScreen(
             onRetry = {

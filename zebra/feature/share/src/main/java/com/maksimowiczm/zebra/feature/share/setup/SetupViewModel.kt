@@ -3,8 +3,8 @@ package com.maksimowiczm.zebra.feature.share.setup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.getOrElse
-import com.maksimowiczm.zebra.core.data.model.FeatureFlag
-import com.maksimowiczm.zebra.core.data.repository.FeatureFlagRepository
+import com.maksimowiczm.zebra.core.data.api.model.FeatureFlag
+import com.maksimowiczm.zebra.core.data.api.repository.FeatureFlagRepository
 import com.maksimowiczm.zebra.core.domain.ObserveSignalingChannelUseCase
 import com.maksimowiczm.zebra.core.domain.SetupError
 import com.maksimowiczm.zebra.core.domain.SetupSignalingChannelUseCase

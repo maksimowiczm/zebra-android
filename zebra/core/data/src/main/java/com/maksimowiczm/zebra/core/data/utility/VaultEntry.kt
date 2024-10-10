@@ -1,17 +1,8 @@
-package com.maksimowiczm.zebra.core.data.model
+package com.maksimowiczm.zebra.core.data.utility
 
+import com.maksimowiczm.zebra.core.data.api.model.VaultEntry
 import com.maksimowiczm.zebra.proto.MessageOuterClass
 import com.maksimowiczm.zebra.proto.MessageOuterClass.Message
-
-typealias VaultEntryIdentifier = String
-
-data class VaultEntry(
-    val identifier: VaultEntryIdentifier,
-    val title: String = "<untitled>",
-    val username: String? = null,
-    val password: (() -> String)? = null,
-    val url: String? = null,
-)
 
 internal val VaultEntry.protoTitle: Message
     get() = Message.newBuilder()

@@ -6,11 +6,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.maksimowiczm.zebra.core.clipboard.ClipboardManager
 import com.maksimowiczm.zebra.core.common.combineN
-import com.maksimowiczm.zebra.core.data.model.FeatureFlag
-import com.maksimowiczm.zebra.core.data.model.VaultStatus
-import com.maksimowiczm.zebra.core.data.repository.FeatureFlagRepository
-import com.maksimowiczm.zebra.core.data.repository.UnlockRepository
-import com.maksimowiczm.zebra.core.data.repository.VaultRepository
+import com.maksimowiczm.zebra.core.data.api.model.FeatureFlag
+import com.maksimowiczm.zebra.core.data.api.model.VaultStatus
+import com.maksimowiczm.zebra.core.data.api.repository.FeatureFlagRepository
+import com.maksimowiczm.zebra.core.data.api.repository.UnlockRepository
+import com.maksimowiczm.zebra.core.data.api.repository.VaultRepository
 import com.maksimowiczm.zebra.core.network.NetworkMonitor
 import com.maksimowiczm.zebra.feature.vault.VaultScreen
 import dagger.hilt.android.lifecycle.HiltViewModel

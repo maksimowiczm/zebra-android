@@ -41,7 +41,7 @@ dependencies {
     implementation(project(":zebra:core:biometry"))
     implementation(project(":zebra:core:common"))
     implementation(project(":zebra:core:common-ui"))
-    implementation(project(":zebra:core:data"))
+    implementation(project(":zebra:core:data:api"))
     implementation(project(":zebra:core:domain"))
 
     // Result monad

@@ -6,11 +6,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.maksimowiczm.zebra.feature.share.ShareScreen
 import com.maksimowiczm.zebra.core.common.combineN
-import com.maksimowiczm.zebra.core.data.model.VaultEntryIdentifier
-import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
-import com.maksimowiczm.zebra.core.data.model.VaultStatus
-import com.maksimowiczm.zebra.core.data.repository.PeerChannelRepository
-import com.maksimowiczm.zebra.core.data.repository.UnlockRepository
+import com.maksimowiczm.zebra.core.data.api.model.VaultEntryIdentifier
+import com.maksimowiczm.zebra.core.data.api.model.VaultIdentifier
+import com.maksimowiczm.zebra.core.data.api.model.VaultStatus
+import com.maksimowiczm.zebra.core.data.api.repository.PeerChannelRepository
+import com.maksimowiczm.zebra.core.data.api.repository.UnlockRepository
 import com.maksimowiczm.zebra.core.domain.ConnectPeerChannelWithTimeoutUseCase
 import com.maksimowiczm.zebra.core.domain.ConnectPeerChannelWithTimeoutUseCase.PeerChannelStatus
 import dagger.hilt.android.lifecycle.HiltViewModel

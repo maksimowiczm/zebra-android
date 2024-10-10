@@ -1,25 +1,26 @@
 package com.maksimowiczm.zebra.core.data.repository
 
-import com.maksimowiczm.zebra.core.data.model.SealedVaultCredentials
-import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
+import com.maksimowiczm.zebra.core.data.api.model.SealedVaultCredentials
+import com.maksimowiczm.zebra.core.data.api.model.VaultIdentifier
+import com.maksimowiczm.zebra.core.data.api.repository.SealedCredentialsRepository
 import com.maksimowiczm.zebra.core.database.dao.CredentialsDao
 import com.maksimowiczm.zebra.core.database.model.CredentialsEntity
 import com.maksimowiczm.zebra.core.database.model.CredentialsType
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class SealedCredentialsRepository @Inject constructor(
+class SealedCredentialsRepositoryImpl @Inject constructor(
     private val credentialsDao: CredentialsDao,
-) {
-    fun observeCredentialsAvailable(vaultIdentifier: VaultIdentifier): Flow<Boolean> {
+) : SealedCredentialsRepository {
+    override fun observeCredentialsAvailable(vaultIdentifier: VaultIdentifier): Flow<Boolean> {
         return credentialsDao.observeHasCredentialsByIdentifier(vaultIdentifier)
     }
 
-    suspend fun getCredentials(vaultIdentifier: VaultIdentifier): SealedVaultCredentials? {
+    override suspend fun getCredentials(vaultIdentifier: VaultIdentifier): SealedVaultCredentials? {
         return credentialsDao.getCredentials(vaultIdentifier)?.toEncryptedVaultCredentials()
     }
 
-    suspend fun upsertCredentials(
+    override suspend fun upsertCredentials(
         vaultIdentifier: VaultIdentifier,
         credentials: SealedVaultCredentials,
     ) {
@@ -35,7 +36,7 @@ class SealedCredentialsRepository @Inject constructor(
         credentialsDao.upsertCredentials(entity)
     }
 
-    suspend fun deleteCredentials(vaultIdentifier: VaultIdentifier) {
+    override suspend fun deleteCredentials(vaultIdentifier: VaultIdentifier) {
         credentialsDao.deleteCredentials(vaultIdentifier)
     }
 }

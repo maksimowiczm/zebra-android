@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.getOrElse
-import com.maksimowiczm.zebra.core.data.repository.VaultRepository
+import com.maksimowiczm.zebra.core.data.api.repository.VaultRepository
 import com.maksimowiczm.zebra.core.domain.ImportUniqueVaultUseCase
 import com.maksimowiczm.zebra.core.domain.ImportVaultResult
 import dagger.hilt.android.lifecycle.HiltViewModel

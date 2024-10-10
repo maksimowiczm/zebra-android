@@ -1,7 +1,7 @@
 package com.maksimowiczm.zebra.feature.vault.opened
 
-import com.maksimowiczm.zebra.core.data.model.Vault
-import com.maksimowiczm.zebra.core.data.model.VaultEntry
+import com.maksimowiczm.zebra.core.data.api.model.Vault
+import com.maksimowiczm.zebra.core.data.api.model.VaultEntry
 import com.maksimowiczm.zebra.core.network.NetworkStatus
 
 internal sealed interface OpenVaultUiState {

@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maksimowiczm.zebra.core.common_ui.theme.ZebraTheme
-import com.maksimowiczm.zebra.core.data.model.FEATURE_FLAGS
-import com.maksimowiczm.zebra.core.data.model.FeatureFlag
+import com.maksimowiczm.zebra.core.data.api.model.FEATURE_FLAGS
+import com.maksimowiczm.zebra.core.data.api.model.FeatureFlag
 
 @Composable
 internal fun FeatureFlagScreen(

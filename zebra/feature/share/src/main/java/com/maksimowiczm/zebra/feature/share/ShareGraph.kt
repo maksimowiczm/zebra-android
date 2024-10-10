@@ -5,11 +5,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
+import com.maksimowiczm.zebra.core.data.api.model.VaultEntryIdentifier
+import com.maksimowiczm.zebra.core.data.api.model.VaultIdentifier
 import com.maksimowiczm.zebra.feature.share.connection.ConnectionScreen
 import com.maksimowiczm.zebra.feature.share.scanner.QrScannerScreen
 import com.maksimowiczm.zebra.feature.share.setup.ShareSetupScreen
-import com.maksimowiczm.zebra.core.data.model.VaultEntryIdentifier
-import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -4,37 +4,38 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.getOrElse
-import com.maksimowiczm.zebra.core.data.model.UnsealedVaultCredentials
-import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
-import com.maksimowiczm.zebra.core.data.model.VaultStatus
+import com.maksimowiczm.zebra.core.data.api.model.UnsealedVaultCredentials
+import com.maksimowiczm.zebra.core.data.api.model.VaultIdentifier
+import com.maksimowiczm.zebra.core.data.api.model.VaultStatus
+import com.maksimowiczm.zebra.core.data.api.repository.FileRepository
+import com.maksimowiczm.zebra.core.data.api.repository.UnlockError
+import com.maksimowiczm.zebra.core.data.api.repository.UnlockRepository
+import com.maksimowiczm.zebra.core.data.api.repository.VaultRepository
 import com.maksimowiczm.zebra.core.data.source.local.keepass.KeepassDataSource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-sealed interface UnlockError {
-    data object VaultNotFound : UnlockError
-    data object FileError : UnlockError
-    data object Unknown : UnlockError
-}
 
-class UnlockRepository @Inject constructor(
+internal class UnlockRepositoryImpl @Inject constructor(
     private val vaultRepository: VaultRepository,
     private val fileRepository: FileRepository,
     private val keepassDataSource: KeepassDataSource,
-) {
-    fun observeVaultStatus(identifier: VaultIdentifier): Flow<VaultStatus> {
+) : UnlockRepository {
+    override fun observeVaultStatus(identifier: VaultIdentifier): Flow<VaultStatus> {
         return keepassDataSource.observeDatabase(identifier)
     }
 
-    fun getVaultStatus(identifier: VaultIdentifier): VaultStatus {
+    override fun getVaultStatus(identifier: VaultIdentifier): VaultStatus {
         return keepassDataSource.getDatabaseStatus(identifier)
     }
 
-    suspend fun unlock(
+    override suspend fun unlock(
         identifier: VaultIdentifier,
         credentials: UnsealedVaultCredentials,
     ): Result<Unit, UnlockError> {
-        val vault = vaultRepository.getVaultByIdentifier(identifier)
+        val vault = vaultRepository.getVaultByIdentifier(
+            identifier
+        )
             ?: return Err(UnlockError.VaultNotFound)
 
         val stream = fileRepository.openInputStream(vault.path).getOrElse {
@@ -52,7 +53,7 @@ class UnlockRepository @Inject constructor(
         return Ok(Unit)
     }
 
-    fun lock(identifier: VaultIdentifier) {
+    override fun lock(identifier: VaultIdentifier) {
         keepassDataSource.lock(identifier)
     }
 }

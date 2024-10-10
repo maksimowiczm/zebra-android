@@ -4,12 +4,12 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.getOrElse
-import com.maksimowiczm.zebra.core.data.crypto.CryptoContext
-import com.maksimowiczm.zebra.core.data.crypto.DecryptError
-import com.maksimowiczm.zebra.core.data.model.SealedVaultCredentials
-import com.maksimowiczm.zebra.core.data.model.UnsealedVaultCredentials
-import com.maksimowiczm.zebra.core.data.model.VaultIdentifier
-import com.maksimowiczm.zebra.core.data.repository.SealedCredentialsRepository
+import com.maksimowiczm.zebra.core.data.api.crypto.CryptoContext
+import com.maksimowiczm.zebra.core.data.api.crypto.DecryptError
+import com.maksimowiczm.zebra.core.data.api.model.SealedVaultCredentials
+import com.maksimowiczm.zebra.core.data.api.model.UnsealedVaultCredentials
+import com.maksimowiczm.zebra.core.data.api.model.VaultIdentifier
+import com.maksimowiczm.zebra.core.data.api.repository.SealedCredentialsRepository
 
 sealed interface GetVaultCredentialsError {
     data object PermanentlyInvalidated : GetVaultCredentialsError

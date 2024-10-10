@@ -36,7 +36,7 @@ android {
 
 dependencies {
 
-    implementation(project(":zebra:core:data"))
+    implementation(project(":zebra:core:data:api"))
 
     // Result
     implementation(libs.kotlin.result)

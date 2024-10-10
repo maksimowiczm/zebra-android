@@ -17,6 +17,8 @@
             <option value="$PROJECT_DIR$/zebra/core/common" />
             <option value="$PROJECT_DIR$/zebra/core/common-ui" />
             <option value="$PROJECT_DIR$/zebra/core/data" />
+            <option value="$PROJECT_DIR$/zebra/core/data/api" />
+            <option value="$PROJECT_DIR$/zebra/core/data/fake" />
             <option value="$PROJECT_DIR$/zebra/core/database" />
             <option value="$PROJECT_DIR$/zebra/core/datastore" />
             <option value="$PROJECT_DIR$/zebra/core/domain" />

@@ -7,10 +7,10 @@ import android.util.Log
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
-import com.maksimowiczm.zebra.core.data.crypto.CryptoContext
-import com.maksimowiczm.zebra.core.data.crypto.DecryptError
-import com.maksimowiczm.zebra.core.data.crypto.EncryptError
-import com.maksimowiczm.zebra.core.data.repository.UserPreferencesRepository
+import com.maksimowiczm.zebra.core.data.api.repository.UserPreferencesRepository
+import com.maksimowiczm.zebra.core.data.api.crypto.CryptoContext
+import com.maksimowiczm.zebra.core.data.api.crypto.DecryptError
+import com.maksimowiczm.zebra.core.data.api.crypto.EncryptError
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext

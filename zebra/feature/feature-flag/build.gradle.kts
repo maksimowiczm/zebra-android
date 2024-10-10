@@ -41,7 +41,7 @@ dependencies {
     // Serialization
     implementation(libs.kotlinx.serialization.json)
     implementation(project(":zebra:core:common-ui"))
-    implementation(project(":zebra:core:data"))
+    implementation(project(":zebra:core:data:api"))
 
     // Hilt
     ksp(libs.hilt.android.compiler)

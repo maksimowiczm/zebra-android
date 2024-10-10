@@ -37,17 +37,19 @@ android {
 
 dependencies {
 
+    implementation(project(":zebra:core:data:api"))
+
     implementation(project(":zebra:core:database"))
     implementation(project(":zebra:core:datastore"))
     implementation(project(":zebra:core:zebra-signal"))
+    implementation(project(":zebra:core:common"))
+    implementation(project(":zebra:core:peer"))
 
     // Kotpass
     implementation(libs.kotpass)
 
     // Result monad
     implementation(libs.kotlin.result)
-    implementation(project(":zebra:core:common"))
-    implementation(project(":zebra:core:peer"))
 
     // Hilt
     ksp(libs.hilt.android.compiler)

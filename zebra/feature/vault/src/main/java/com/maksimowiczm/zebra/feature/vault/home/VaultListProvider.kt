@@ -2,8 +2,8 @@ package com.maksimowiczm.zebra.feature.vault.home
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.core.net.toUri
-import com.maksimowiczm.zebra.core.data.model.Vault
-import com.maksimowiczm.zebra.core.data.model.VaultBiometricsStatus
+import com.maksimowiczm.zebra.core.data.api.model.Vault
+import com.maksimowiczm.zebra.core.data.api.model.VaultBiometricsStatus
 
 internal class VaultListProvider : PreviewParameterProvider<List<Vault>> {
     override val values = sequenceOf(

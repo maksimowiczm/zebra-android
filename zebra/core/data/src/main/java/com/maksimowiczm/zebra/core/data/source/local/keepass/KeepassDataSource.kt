@@ -8,8 +8,8 @@ import app.keemobile.kotpass.database.decode
 import app.keemobile.kotpass.database.getEntries
 import app.keemobile.kotpass.errors.CryptoError
 import app.keemobile.kotpass.models.Entry
-import com.maksimowiczm.zebra.core.data.model.VaultEntry
-import com.maksimowiczm.zebra.core.data.model.VaultStatus
+import com.maksimowiczm.zebra.core.data.api.model.VaultEntry
+import com.maksimowiczm.zebra.core.data.api.model.VaultStatus
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.NonCancellable
@@ -126,7 +126,7 @@ class KeepassDataSource(
                         VaultStatus.UnrecoverableError,
                         is VaultStatus.Unlocked,
                         null,
-                        -> map
+                            -> map
                     }
                 }
                 throw e

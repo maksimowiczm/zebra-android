@@ -3,10 +3,10 @@ package com.maksimowiczm.zebra.core.domain
 import android.net.Uri
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
-import com.maksimowiczm.zebra.core.data.repository.FileRepository
-import com.maksimowiczm.zebra.core.data.repository.VaultRepository
 import com.github.michaelbull.result.Result
-import com.maksimowiczm.zebra.core.data.model.Vault
+import com.maksimowiczm.zebra.core.data.api.model.Vault
+import com.maksimowiczm.zebra.core.data.api.repository.FileRepository
+import com.maksimowiczm.zebra.core.data.api.repository.VaultRepository
 import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 

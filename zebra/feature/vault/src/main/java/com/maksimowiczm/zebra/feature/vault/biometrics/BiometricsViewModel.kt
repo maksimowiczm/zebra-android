@@ -6,10 +6,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.github.michaelbull.result.getOrElse
 import com.maksimowiczm.zebra.core.biometry.BiometricManager
-import com.maksimowiczm.zebra.core.data.model.UnsealedVaultCredentials
-import com.maksimowiczm.zebra.core.data.model.VaultStatus
-import com.maksimowiczm.zebra.core.data.repository.SealedCredentialsRepository
-import com.maksimowiczm.zebra.core.data.repository.UnlockRepository
+import com.maksimowiczm.zebra.core.data.api.model.UnsealedVaultCredentials
+import com.maksimowiczm.zebra.core.data.api.model.VaultStatus
+import com.maksimowiczm.zebra.core.data.api.repository.SealedCredentialsRepository
+import com.maksimowiczm.zebra.core.data.api.repository.UnlockRepository
 import com.maksimowiczm.zebra.core.domain.AddVaultCredentialsError
 import com.maksimowiczm.zebra.core.domain.AddVaultCredentialsUseCase
 import com.maksimowiczm.zebra.feature.vault.VaultScreen

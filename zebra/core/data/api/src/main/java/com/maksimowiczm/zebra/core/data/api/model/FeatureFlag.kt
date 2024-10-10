@@ -1,4 +1,4 @@
-package com.maksimowiczm.zebra.core.data.model
+package com.maksimowiczm.zebra.core.data.api.model
 
 enum class FeatureFlag(
     val title: String,

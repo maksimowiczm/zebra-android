@@ -2,7 +2,7 @@ package com.maksimowiczm.zebra.feature.vault.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maksimowiczm.zebra.core.data.repository.VaultRepository
+import com.maksimowiczm.zebra.core.data.api.repository.VaultRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
