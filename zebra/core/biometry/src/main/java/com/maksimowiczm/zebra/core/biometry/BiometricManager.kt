@@ -1,5 +1,6 @@
 package com.maksimowiczm.zebra.core.biometry
 
+import com.maksimowiczm.zebra.core.data.api.crypto.CryptoContext
 import kotlinx.coroutines.flow.Flow
 import javax.crypto.Cipher
 
@@ -19,5 +20,5 @@ sealed interface AuthenticationResult {
 interface BiometricManager {
     fun hasBiometric(): BiometryStatus
     fun authenticate(cipher: Cipher? = null): Flow<AuthenticationResult>
-    val cryptoContext: BiometricCryptoContext
+    val cryptoContext: CryptoContext
 }

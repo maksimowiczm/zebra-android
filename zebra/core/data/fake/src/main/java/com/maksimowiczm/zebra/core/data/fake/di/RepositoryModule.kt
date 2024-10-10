@@ -18,7 +18,9 @@ import com.maksimowiczm.zebra.core.data.fake.repository.FakeVaultRepository
 import com.maksimowiczm.zebra.core.data.fake.repository.FakeZebraSignalRepository
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ViewModelComponent
 
 @Module
@@ -29,9 +31,6 @@ internal abstract class RepositoryModule {
 
     @Binds
     abstract fun bindUnlockRepository(impl: FakeUnlockRepository): UnlockRepository
-
-    @Binds
-    abstract fun bindUserPreferencesRepository(impl: FakeUserPreferencesRepository): UserPreferencesRepository
 
     @Binds
     abstract fun bindFeatureFlagRepository(impl: FakeFeatureFlagRepository): FeatureFlagRepository
@@ -47,4 +46,13 @@ internal abstract class RepositoryModule {
 
     @Binds
     abstract fun bindZebraSignalRepository(impl: FakeZebraSignalRepository): ZebraSignalRepository
+}
+
+@Module
+@InstallIn(ActivityComponent::class)
+internal object UserPreferencesRepositoryModule {
+    @Provides
+    fun bindUserPreferencesRepository(): UserPreferencesRepository {
+        return FakeUserPreferencesRepository()
+    }
 }

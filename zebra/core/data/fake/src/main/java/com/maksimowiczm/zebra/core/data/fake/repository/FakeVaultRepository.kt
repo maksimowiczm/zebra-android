@@ -7,52 +7,63 @@ import com.maksimowiczm.zebra.core.data.api.model.VaultIdentifier
 import com.maksimowiczm.zebra.core.data.api.repository.VaultRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-val vaults = (1..100L).map {
+private var vaults = (1..100L).map {
     Vault(
         identifier = it,
         name = "Vault $it",
         path = "/path/to/vault/$it".toUri(),
         pathBroken = it % 4L == 3L,
-        biometricsStatus = when (it % 3L) {
+        biometricsStatus = when (it % 2L) {
             0L -> VaultBiometricsStatus.NotSet
             1L -> VaultBiometricsStatus.Enabled
-            2L -> VaultBiometricsStatus.Broken
             else -> throw IllegalStateException()
         }
     )
 }
+private val vaultsFlow: MutableStateFlow<List<Vault>> = MutableStateFlow(vaults)
 
-internal class FakeVaultRepository @Inject constructor() : VaultRepository {
-    private val vaultsFlow: MutableStateFlow<List<Vault>> = MutableStateFlow(vaults)
-
+class FakeVaultRepository @Inject constructor() : VaultRepository {
     override fun observeVaults(): Flow<List<Vault>> {
         return vaultsFlow
     }
 
     override fun observeVaultByIdentifier(identifier: VaultIdentifier): Flow<Vault?> {
-        TODO("Not yet implemented")
+        return flow { emit(vaults.find { it.identifier == identifier }) }
     }
 
     override suspend fun getVaultByIdentifier(identifier: VaultIdentifier): Vault? {
-        TODO("Not yet implemented")
+        return vaults.find { it.identifier == identifier }
     }
 
     override suspend fun vaultExistByName(name: String): Boolean {
-        TODO("Not yet implemented")
+        return vaults.any { it.name == name }
     }
 
     override suspend fun getVaultByPath(path: String): Vault? {
-        TODO("Not yet implemented")
+        return vaults.find { it.path.toString() == path }
     }
 
     override suspend fun upsertVault(name: String, path: String) {
-        TODO("Not yet implemented")
+        val identifier = vaults.maxOfOrNull { it.identifier }?.plus(1L) ?: 1L
+
+        vaults = vaults.plus(
+            Vault(
+                identifier = identifier,
+                name = name,
+                path = path.toUri(),
+                pathBroken = false,
+                biometricsStatus = VaultBiometricsStatus.NotSet
+            )
+        )
+
+        vaultsFlow.emit(vaults)
     }
 
     override suspend fun deleteVault(vault: Vault) {
-        TODO("Not yet implemented")
+        vaults = vaults.filter { it.identifier != vault.identifier }
+        vaultsFlow.emit(vaults)
     }
-
 }

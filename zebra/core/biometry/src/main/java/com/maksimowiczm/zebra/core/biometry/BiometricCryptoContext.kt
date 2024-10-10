@@ -7,8 +7,8 @@ import android.util.Log
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
-import com.maksimowiczm.zebra.core.data.api.repository.UserPreferencesRepository
 import com.maksimowiczm.zebra.core.data.api.crypto.CryptoContext
+import com.maksimowiczm.zebra.core.data.api.repository.UserPreferencesRepository
 import com.maksimowiczm.zebra.core.data.api.crypto.DecryptError
 import com.maksimowiczm.zebra.core.data.api.crypto.EncryptError
 import kotlinx.coroutines.CoroutineDispatcher
@@ -25,7 +25,7 @@ import javax.crypto.spec.GCMParameterSpec
  * Context for encrypting and decrypting data using biometric authentication.
  * The key is tied to the biometric authentication and is invalidated when the user re-enrolls.
  */
-class BiometricCryptoContext(
+class BiometricCryptoContextImpl(
     private val biometricManager: BiometricManager,
     private val defaultDispatcher: CoroutineDispatcher,
     private val userPreferencesRepository: UserPreferencesRepository,

@@ -38,6 +38,7 @@ android {
 dependencies {
     implementation(project(":zebra:core:data:api"))
     implementation(project(":zebra:core:zebra-signal"))
+    implementation(project(":zebra:core:biometry"))
 
     // Hilt
     ksp(libs.hilt.android.compiler)

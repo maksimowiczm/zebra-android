@@ -7,6 +7,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.CryptoObject
 import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.fragment.app.FragmentActivity
+import com.maksimowiczm.zebra.core.data.api.crypto.CryptoContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +17,7 @@ import javax.crypto.Cipher
 import androidx.biometric.BiometricManager as AndroidBiometricManager
 import com.maksimowiczm.zebra.core.biometry.BiometricManager as BiometricManagerAPI
 
-class BiometricManagerImpl(
+open class BiometricManagerImpl(
     private val fragmentActivity: FragmentActivity,
     private val mainDispatcher: CoroutineDispatcher, // UI thread
     private val defaultDispatcher: CoroutineDispatcher, // CPU bound work
@@ -97,8 +98,8 @@ class BiometricManagerImpl(
     /**
      * Provides access to the cryptographic operations with the biometric prompt.
      */
-    override val cryptoContext
-        get() = BiometricCryptoContext(
+    override val cryptoContext : CryptoContext
+        get() = BiometricCryptoContextImpl(
             biometricManager = this,
             defaultDispatcher = defaultDispatcher,
             userPreferencesRepository = userPreferencesRepository,
