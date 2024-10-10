@@ -32,7 +32,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maksimowiczm.zebra.core.common_ui.SomethingWentWrongScreen
@@ -43,6 +42,7 @@ import com.maksimowiczm.zebra.core.data.api.model.VaultEntryIdentifier
 import com.maksimowiczm.zebra.core.data.api.model.VaultIdentifier
 import com.maksimowiczm.zebra.core.network.NetworkStatus
 import com.maksimowiczm.zebra.feature_vault.R
+import java.net.URI
 
 @Composable
 internal fun OpenedVaultScreen(
@@ -73,7 +73,7 @@ internal fun OpenedVaultScreen(
     when (uiState) {
         OpenVaultUiState.Loading,
         OpenVaultUiState.Closed,
-        -> LoadingScreen()
+            -> LoadingScreen()
 
         OpenVaultUiState.Lost -> SomethingWentWrongScreen(onNavigateUp)
 
@@ -195,7 +195,7 @@ private fun OpenedVaultScreenPreview(
                 vault = Vault(
                     identifier = 0,
                     name = "My vault",
-                    path = "".toUri()
+                    path = URI.create("")
                 ),
                 entries = entries,
                 shareHandler = ShareHandler.Disabled

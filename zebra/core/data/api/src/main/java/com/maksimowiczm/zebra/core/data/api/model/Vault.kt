@@ -1,13 +1,13 @@
 package com.maksimowiczm.zebra.core.data.api.model
 
-import android.net.Uri
+import java.net.URI
 
 typealias VaultIdentifier = Long
 
 data class Vault(
     val identifier: Long,
     val name: String,
-    val path: Uri,
+    val path: URI,
     val pathBroken: Boolean = true,
     val biometricsStatus: VaultBiometricsStatus = VaultBiometricsStatus.NotSet,
 )

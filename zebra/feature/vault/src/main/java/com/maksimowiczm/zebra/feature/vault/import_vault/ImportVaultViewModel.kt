@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.net.URI
 import javax.inject.Inject
 
 @HiltViewModel
@@ -80,7 +81,7 @@ internal class ImportVaultViewModel @Inject constructor(
 
             importUniqueVaultUseCase.invoke(
                 name = state.name,
-                path = state.path
+                path = URI.create(state.path.toString())
             ).getOrElse { err ->
                 _state.update {
                     when (err) {

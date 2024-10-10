@@ -1,6 +1,5 @@
 package com.maksimowiczm.zebra.core.data.fake.repository
 
-import androidx.core.net.toUri
 import com.maksimowiczm.zebra.core.data.api.model.Vault
 import com.maksimowiczm.zebra.core.data.api.model.VaultBiometricsStatus
 import com.maksimowiczm.zebra.core.data.api.model.VaultIdentifier
@@ -8,13 +7,14 @@ import com.maksimowiczm.zebra.core.data.api.repository.VaultRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import java.net.URI
 import javax.inject.Inject
 
 private var vaults = (1..100L).map {
     Vault(
         identifier = it,
         name = "Vault $it",
-        path = "/path/to/vault/$it".toUri(),
+        path = URI.create("/path/to/vault/$it"),
         pathBroken = it % 4L == 3L,
         biometricsStatus = when (it % 2L) {
             0L -> VaultBiometricsStatus.NotSet
@@ -53,7 +53,7 @@ class FakeVaultRepository @Inject constructor() : VaultRepository {
             Vault(
                 identifier = identifier,
                 name = name,
-                path = path.toUri(),
+                path = URI.create(path),
                 pathBroken = false,
                 biometricsStatus = VaultBiometricsStatus.NotSet
             )

@@ -1,14 +1,14 @@
 package com.maksimowiczm.zebra.core.data.api.repository
 
-import android.net.Uri
 import com.github.michaelbull.result.Result
 import java.io.InputStream
+import java.net.URI
 
 interface FileRepository {
-    fun persist(uri: Uri): Result<Unit, Unit>
-    fun release(uri: Uri): Result<Unit, Unit>
-    fun isReadable(uri: Uri): Boolean
-    fun openInputStream(uri: Uri): Result<InputStream, OpenFileError>
+    fun persist(uri: URI): Result<Unit, Unit>
+    fun release(uri: URI): Result<Unit, Unit>
+    fun isReadable(uri: URI): Boolean
+    fun openInputStream(uri: URI): Result<InputStream, OpenFileError>
 }
 
 sealed interface OpenFileError {

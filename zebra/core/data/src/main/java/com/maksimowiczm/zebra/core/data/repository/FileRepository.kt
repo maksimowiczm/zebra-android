@@ -11,16 +11,17 @@ import com.maksimowiczm.zebra.core.data.api.repository.OpenFileError
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.FileNotFoundException
 import java.io.InputStream
+import java.net.URI
 import javax.inject.Inject
 
 
 class FileRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : FileRepository {
-    override fun persist(uri: Uri): Result<Unit, Unit> {
+    override fun persist(uri: URI): Result<Unit, Unit> {
         try {
             context.contentResolver.takePersistableUriPermission(
-                uri,
+                Uri.parse(uri.toString()),
                 Intent.FLAG_GRANT_READ_URI_PERMISSION
             )
 
@@ -30,10 +31,10 @@ class FileRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun release(uri: Uri): Result<Unit, Unit> {
+    override fun release(uri: URI): Result<Unit, Unit> {
         try {
             context.contentResolver.releasePersistableUriPermission(
-                uri,
+                Uri.parse(uri.toString()),
                 Intent.FLAG_GRANT_READ_URI_PERMISSION
             )
 
@@ -43,19 +44,19 @@ class FileRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun isReadable(uri: Uri): Boolean {
+    override fun isReadable(uri: URI): Boolean {
         // todo this might be really bad idea to do
         try {
-            context.contentResolver.openFileDescriptor(uri, "r")?.use { }
+            context.contentResolver.openFileDescriptor(Uri.parse(uri.toString()), "r")?.use { }
             return true
         } catch (_: Exception) {
             return false
         }
     }
 
-    override fun openInputStream(uri: Uri): Result<InputStream, OpenFileError> {
+    override fun openInputStream(uri: URI): Result<InputStream, OpenFileError> {
         val stream = runCatching {
-            context.contentResolver.openInputStream(uri)
+            context.contentResolver.openInputStream(Uri.parse(uri.toString()))
         }.getOrElse {
             if (it is FileNotFoundException) {
                 return Err(OpenFileError.FileNotFound)

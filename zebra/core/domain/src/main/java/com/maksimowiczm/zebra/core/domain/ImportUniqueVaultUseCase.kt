@@ -1,6 +1,6 @@
 package com.maksimowiczm.zebra.core.domain
 
-import android.net.Uri
+import java.net.URI
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
@@ -19,7 +19,7 @@ class ImportUniqueVaultUseCase @Inject constructor(
     private val vaultRepository: VaultRepository,
     private val fileRepository: FileRepository,
 ) {
-    suspend operator fun invoke(name: String, path: Uri): Result<Unit, ImportVaultResult> {
+    suspend operator fun invoke(name: String, path: URI): Result<Unit, ImportVaultResult> {
         try {
             val existingVault = vaultRepository.getVaultByPath(path.toString())
             if (existingVault != null) {
