@@ -51,6 +51,8 @@ internal class WebRtcPeerChannelBuilder(
             ?: return null
 
         val dataChannelInit = DataChannel.Init().apply {
+            id = 0
+            negotiated = true
             ordered = true
         }
 
@@ -238,7 +240,7 @@ private class DataChannelBuilder(
     override fun onIceCandidatesRemoved(p0: Array<out IceCandidate>?) = Unit
     override fun onAddStream(p0: MediaStream?) = Unit
     override fun onRemoveStream(p0: MediaStream?) = Unit
-    override fun onDataChannel(p0: DataChannel?) = Unit
+    override fun onDataChannel(dc: DataChannel) = Unit
     override fun onRenegotiationNeeded() = Unit
 
     companion object {

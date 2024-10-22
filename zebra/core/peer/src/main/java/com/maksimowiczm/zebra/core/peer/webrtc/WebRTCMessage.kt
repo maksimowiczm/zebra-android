@@ -57,6 +57,7 @@ internal class WebRTCMessageSerializer : KSerializer<WebRTCMessage> {
         }
 
         is WebRTCMessage.IceCandidate -> encoder.encodeStructure(descriptor) {
+            encodeStringElement(descriptor, TYPE, "candidate")
             encodeStringElement(descriptor, CANDIDATE, value.candidate)
             encodeStringElement(descriptor, SDP_MID, value.sdpMid)
             encodeIntElement(descriptor, SDP_M_LINE_INDEX, value.sdpMLineIndex)
@@ -84,9 +85,10 @@ internal class WebRTCMessageSerializer : KSerializer<WebRTCMessage> {
             }
 
             when (type) {
+                "candidate" -> WebRTCMessage.IceCandidate(candidate!!, sdpMLineIndex!!, sdpMid!!)
                 "answer" -> WebRTCMessage.Answer(sdp!!)
                 "offer" -> WebRTCMessage.Offer(sdp!!)
-                else -> WebRTCMessage.IceCandidate(candidate!!, sdpMLineIndex!!, sdpMid!!)
+                else -> throw SerializationException("Unknown type: $type")
             }
         }
     }
