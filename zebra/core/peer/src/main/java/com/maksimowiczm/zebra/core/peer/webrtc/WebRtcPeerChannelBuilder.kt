@@ -151,6 +151,7 @@ private class DataChannelBuilder(
 
                     is WebRTCMessage.IceCandidate -> {
                         Log.i(TAG, "Received ice candidate")
+                        // It always fails to add ice candidate. This is why it doesn't work with relay
                         if (!connection.addIceCandidate(message.toIceCandidate())) {
                             Log.w(TAG, "Failed to add ice candidate")
                             connectingJob.cancel()
@@ -205,28 +206,6 @@ private class DataChannelBuilder(
         return dataChannelWrapper
     }
 
-    override fun onSignalingChange(state: PeerConnection.SignalingState) {
-        Log.d(TAG, "Signaling state changed to: $state")
-
-        if (state == PeerConnection.SignalingState.STABLE) {
-            Log.i(TAG, "Signaling state is stable")
-            // connection is established, don't need connecting scope anymore
-            connectingJob.cancel()
-            // don't need signaling channel anymore
-            signalingChannel.close(1000, null)
-        }
-
-        if (state == PeerConnection.SignalingState.CLOSED) {
-            Log.i(TAG, "Signaling state is closed")
-            if (dataChannelWrapper != null) {
-                listener.onClosed(dataChannelWrapper!!)
-            }
-
-            connectingJob.cancel()
-            signalingChannel.close(1000, null)
-        }
-    }
-
     override fun onIceCandidate(candidate: IceCandidate) {
         Log.d(TAG, "Sending ice candidate: $candidate")
         if (!signalingChannel.send(candidate.toMessage())) {
@@ -234,6 +213,7 @@ private class DataChannelBuilder(
         }
     }
 
+    override fun onSignalingChange(state: PeerConnection.SignalingState) = Unit
     override fun onIceGatheringChange(state: PeerConnection.IceGatheringState) = Unit
     override fun onIceConnectionChange(p0: PeerConnection.IceConnectionState?) = Unit
     override fun onIceConnectionReceivingChange(p0: Boolean) = Unit
@@ -242,6 +222,31 @@ private class DataChannelBuilder(
     override fun onRemoveStream(p0: MediaStream?) = Unit
     override fun onDataChannel(dc: DataChannel) = Unit
     override fun onRenegotiationNeeded() = Unit
+
+    override fun onConnectionChange(state: PeerConnection.PeerConnectionState) {
+        Log.d(TAG, "Signaling state changed to: $state")
+
+        if (state == PeerConnection.PeerConnectionState.CONNECTED) {
+            Log.i(TAG, "Connection established")
+            // connection is established, don't need connecting scope anymore
+            connectingJob.cancel()
+            // don't need signaling channel anymore
+            signalingChannel.close(1000, null)
+        }
+
+        if (
+            state == PeerConnection.PeerConnectionState.CLOSED ||
+            state == PeerConnection.PeerConnectionState.DISCONNECTED
+        ) {
+            Log.i(TAG, "Connection closed")
+            if (dataChannelWrapper != null) {
+                listener.onClosed(dataChannelWrapper!!)
+            }
+
+            connectingJob.cancel()
+            signalingChannel.close(1000, null)
+        }
+    }
 
     companion object {
         private const val TAG = "DataChannelBuilder"
